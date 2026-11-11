@@ -1,0 +1,22 @@
+[project]
+name = "quakescore"
+version = "0.1.0"
+description = "Building modal parameters and seismic vulnerability scores from phone accelerometers"
+requires-python = ">=3.11"
+dependencies = ["numpy>=2.0", "scipy>=1.13"]
+
+[project.optional-dependencies]
+service = ["fastapi>=0.110", "uvicorn>=0.29", "python-multipart>=0.0.9"]
+dev = ["pytest>=8", "httpx>=0.27"]
+# h3 is used for spatial cells when a wheel exists for the interpreter; a grid fallback is built in
+h3 = ["h3>=4"]
+
+[tool.setuptools.packages.find]
+include = ["quakescore*"]
+
+[tool.setuptools.package-data]
+quakescore = ["vuln/data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
