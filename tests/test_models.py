@@ -57,3 +57,28 @@ def test_detect_change_finds_step_and_ignores_temperature():
     stepped = base * np.where(t >= 180, 0.95, 1.0)
     r = detect_change(t, stepped, temp)
     assert r.alarm and r.step == pytest.approx(-0.05, abs=0.01) and abs(r.onset - 180) <= 24
+
+
+def test_epoch_shift_tracks_a_stiffness_loss():
+    from quakescore.change.track import epoch_shift
+
+    rng = np.random.default_rng(9)
+    b = make_building(9)
+    env = ENVIRONMENTS["energetic"]
+
+    def nights(building, count):
+        site = FastSite(building, env, 9, (0.0, 0.0), ("M",))
+        out = []
+        for i in range(count):
+            p = random_placement(rng, PHONE_MODELS["low"], 9, contributor=f"c{i % 3}")
+            p.pos = (0.0, 0.0)
+            out.append(simulate_features(building, env, p, 6 * 3600.0, 86400.0 * i, rng, site=site, bands=("M",)))
+        return out
+
+    ref = [(m.f, m.zeta) for m in identify(nights(b, 10), n_boot=0, bands=("M",)) if m.f < 2.6]
+    assert len(ref) == 2
+    same, z0 = epoch_shift(nights(b, 5), "M", ref)
+    lost, z1 = epoch_shift(nights(b.damaged(0.90), 5), "M", ref)          # 10% stiffness, 5.1% frequency
+    # five nights give the shift to roughly half a percent
+    assert abs(same) < 0.012 and z0 > 4
+    assert lost == pytest.approx(np.sqrt(0.90) - 1, abs=0.012) and z1 > 4
