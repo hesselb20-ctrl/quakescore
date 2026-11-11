@@ -1,0 +1,12 @@
+{
+ "stacks": 400,
+ "sessions_per_stack": 20,
+ "stacks_with_false_peak_z5.0": 64,
+ "false_peaks_z5.0": 73,
+ "stacks_with_false_peak_z5.5": 17,
+ "false_peaks_z5.5": 18,
+ "stacks_with_false_peak_z6.0": 5,
+ "false_peaks_z6.0": 5,
+ "stacks_with_false_peak_z7.0": 0,
+ "false_peaks_z7.0": 0
+}
