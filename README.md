@@ -17,11 +17,12 @@ Every number in this repository carries one of four labels: `REAL` (measured on 
 
 ## The idea in 99 seconds
 
-[![Tutorial: why stacking nights reveals the building](docs/media/tutorial_teaser.gif)](docs/media/quakescore_tutorial.mp4)
+[![Tutorial: why stacking nights reveals the building](docs/media/tutorial_teaser.gif)](docs/media/quakescore_tutorial.mp4?raw=true)
 
-[Watch the tutorial](docs/media/quakescore_tutorial.mp4) (1 min 39 s, no sound): the problem, the
-idea, why stacking works, the pipeline, how to record a night, and what comes out. The clip above is
-the stacking scene. Everything shown is simulated and says so on screen.
+[Download the tutorial](docs/media/quakescore_tutorial.mp4?raw=true) (MP4, 12 MB, 1 min 39 s, no
+sound): the problem, the idea, why stacking works, the pipeline, how to record a night, and what
+comes out. GitHub does not play videos stored in a repository, so the link downloads the file. The
+clip above is the stacking scene. Everything shown is simulated and says so on screen.
 
 ## How it works
 
