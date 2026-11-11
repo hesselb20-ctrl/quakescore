@@ -29,6 +29,9 @@ class StreamingVectorTest {
     @Test
     fun streamB_100HzGrid_endsOnFlaggedRun() = check("stream_b")
 
+    @Test
+    fun streamC_browserRate_upsampledTo100HzGrid() = check("stream_c")
+
     private fun check(name: String) {
         val exp = Vectors.json("${name}_expected.json")
         val meta = exp.obj("meta")

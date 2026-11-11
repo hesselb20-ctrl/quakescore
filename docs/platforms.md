@@ -1,12 +1,14 @@
-# Platforms: Android and iOS
+# Platforms: Android, iOS and the browser
 
 The spectral contract (DESIGN.md 3.1) is the same on both platforms: the same grid, privacy filter,
 zoom bands, windows, gate rules and upload schema. What differs is when a phone may measure, how fast
 and how regularly it samples, which clocks and sensors exist, and what the user has to do.
 
 Status: the Android app (`android/`) compiles and its signal processing passes the reference tests, but it has not been run on a phone. The iOS
-app (`ios/`) is a "measure now" skeleton without the spectral pipeline. No number in this document
-was measured on a device; wherever one is needed it says "to be measured" and how.
+app (`ios/`) is a "measure now" skeleton without the spectral pipeline. A browser collector
+(`web/collector/`) runs the full pipeline in a web page and is the way to record on an iPhone today;
+it was checked with simulated sensor readings and has not run on a phone either. No number in this
+document was measured on a device; wherever one is needed it says "to be measured" and how.
 
 ## Summary
 
@@ -138,7 +140,31 @@ the confirmed place asks for the building again.
 **iOS.** Each session: open the app, put the phone flat on a charger, start a 30-60 minute session,
 dim the screen and leave the app open and the phone untouched.
 
-## Streaming gate rules (both platforms)
+## Browser collector
+
+`web/collector/` is one static page. It needs no install and no server, which makes it the shortest
+route to a first real night, on iPhone in particular.
+
+- **Sensor.** `devicemotion` events, `accelerationIncludingGravity`, in m/s^2. Browsers deliver
+  about 60 events a second (to be measured per phone), so the 100 Hz grid and the factor-2 privacy
+  filter are used; `tests/vectors/stream_c` covers a 59.94 Hz input with timestamp jitter.
+- **Permission.** iOS asks for motion access once, on a tap (`DeviceMotionEvent.requestPermission`).
+  The page must be served over https.
+- **Foreground only.** Events stop when the page is hidden or the phone locks. A gap of more than 2 s
+  ends the session; a copy of the spectra so far is kept in the browser's local storage every minute.
+  The page asks for a screen wake lock where the browser has one.
+- **Time.** Event timestamps on the page clock (`performance.timeOrigin + event.timeStamp`), no
+  synchronisation: `sync_source` "none", `sync_sigma_ms` -1. Good enough for tier A spectra, not for
+  tier B.
+- **Not available.** Barometer (floor is typed), battery temperature, and on iOS the battery level
+  (`battery_start` and `battery_end` are null). `lsb` is estimated as the smallest step seen between
+  readings. `sensor_name` is "devicemotion" and `app_version` starts with "web-".
+- **Output.** The same upload schema v1, saved as a file by the user instead of uploaded.
+
+Its signal processing (`web/collector/dsp.js`) is a port of `SessionProcessor.kt` and passes the same
+vectors (`node web/collector/test_dsp.mjs`).
+
+## Streaming gate rules (all platforms)
 
 The Python reference (`quakescore/device/pipeline.py`) uses session-wide statistics. A phone cannot
 hold a night of raw samples, so the device uses these streaming-equivalent rules
@@ -204,7 +230,8 @@ The numbers above are placeholders showing types, not measurements.
   as UTF-8 bytes before hashing.
 - `t_start` is UTC epoch seconds of the first sample rounded to the minute; `duration` in seconds.
 - `fs_raw` is the measured raw rate (Hz); `lsb` is `Sensor.getResolution()` in m/s^2.
-- `sync_sigma_ms` is -1 when `sync_source` is "none".
+- `sync_sigma_ms` is -1 when `sync_source` is "none"; the server accepts -1 only in that case.
+- `battery_start` and `battery_end` are null when the platform exposes no battery level.
 - `temp_c` is battery temperature in degrees C, or null.
 - `csd`: base64 of little-endian float32[1025 * 9]; per bin, in this order:
   `Gxx, Gyy, Gzz, Re Gxy, Im Gxy, Re Gxz, Im Gxz, Re Gyz, Im Gyz`, where G is the mean (sum divided by

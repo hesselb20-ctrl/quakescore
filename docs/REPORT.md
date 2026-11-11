@@ -78,7 +78,7 @@ trials on typical nights.
 
 **Change detection (Milestone 6).** One year of sessions in five-night epochs, frequency following temperature and an unobserved slow term, a permanent stiffness loss half-way through, threshold set for 5% false alarms. Smallest loss detected in at least 90% of trials: 9 storeys with an 80 ug phone: not reached with 40 sessions, not reached with 60 sessions, 2.5% with 100 sessions, 5% with 200 sessions. 9 storeys with a 150 ug phone: not reached with 40 sessions, not reached with 60 sessions, not reached with 100 sessions, not reached with 200 sessions. 25 storeys with an 80 ug phone: not reached with 40 sessions, not reached with 60 sessions, 5% with 100 sessions, 5% with 200 sessions. Each cell has 30 trials, so rates carry roughly 9 points of sampling error; read the 80 ug results as 5% with 100 or more sessions a year. Residual scatter after temperature correction is 0.63% to 1.39% of frequency. Step sizes are recovered without bias. The first version of this experiment failed (a 20% loss was caught in only 20 to 60% of trials) because per-epoch peak detection sometimes latched onto the other horizontal mode; tracking now registers each epoch against reference modes, using all peaks jointly. The environmental terms are assumptions at the mild end of the published range, so real detection limits will be worse.
 
-**Demo city (Milestone 7).** 687 real OpenStreetMap footprints in downtown San Francisco with simulated structures, contributors and 30404 sessions (one phone per 1500 m2 of floor area, assumed). 222 buildings scored, 255 need more data, 210 have none. Scored by height: 7 of 231 (1-3 storeys), 21 of 180 (4-7), 63 of 134 (8-14), 76 of 86 (15-29), 55 of 56 (30+). First-mode frequency within 5% of the simulated truth in 94% of scored buildings; wrong mode reported as the fundamental in 13. Stiffness anomalies: 25 planted, 8 scored, 2 flagged. Frequency-drop alerts: 4 of 4 damaged buildings caught, 1 false alert. API, portfolio upload and dashboard run locally against this data (39 service tests pass); nothing is deployed.
+**Demo city (Milestone 7).** 687 real OpenStreetMap footprints in downtown San Francisco with simulated structures, contributors and 30404 sessions (one phone per 1500 m2 of floor area, assumed). 222 buildings scored, 255 need more data, 210 have none. Scored by height: 7 of 231 (1-3 storeys), 21 of 180 (4-7), 63 of 134 (8-14), 76 of 86 (15-29), 55 of 56 (30+). First-mode frequency within 5% of the simulated truth in 94% of scored buildings; wrong mode reported as the fundamental in 13. Stiffness anomalies: 25 planted, 8 scored, 2 flagged. Frequency-drop alerts: 4 of 4 damaged buildings caught, 1 false alert. API, portfolio upload and dashboard run locally against this data (40 service tests pass); nothing is deployed.
 
 **Tooling for the real-building test.** `experiments/m3_validate_real.py` reads uploaded session
 files and prints the comparison table. A dress rehearsal with simulated stand-ins for the ten
@@ -91,10 +91,15 @@ rehearsal shows the tooling works; it is not evidence about real buildings.
 
 - The Android app has never run on a phone. It compiles (debug APK, lint 0 errors) and the compiled
   Kotlin DSP reproduces the Python reference on the test vectors to about 5e-7 in all three bands
-  (9 of 9 tests). Sensor delivery, the foreground service, time sync, the barometer and battery cost
+  (10 of 10 tests). Sensor delivery, the foreground service, time sync, the barometer and battery cost
   are untested in practice.
 - No overnight sessions, no battery measurement, no noise-floor measurement, no real building.
-- The iOS app is a skeleton.
+- The iOS app is a skeleton. The route to an iPhone measurement is a browser collector
+  (`web/collector/`): one web page that runs the same signal processing and saves a session file.
+  Its JavaScript DSP reproduces the Python reference on three test vectors to about 5e-7, and the
+  page was driven with simulated sensor events (12 minutes of white noise read back as 74 against
+  74.5 ug/sqrt(Hz) expected). It has not run on a phone. Browsers deliver about 60 readings a
+  second and only while the page is open, so it is a field-test tool, not the product.
 - The score was not validated against earthquake damage. No open dataset pairs pre-event modal
   measurements with post-event damage for the same buildings. A class-level comparison with the
   ACI 133 Turkey 2023 database was identified but not run.
@@ -133,8 +138,8 @@ rehearsal shows the tooling works; it is not evidence about real buildings.
 
 ## 4. Three next steps to a paid pilot
 
-1. **Get the first real night, this month.** Install the debug APK on a phone (it builds; the
-   field-test path needs no server) and run the two cheapest decisive measurements from
+1. **Get the first real night, this month.** Open the browser collector on any phone, or install
+   the debug APK on an Android phone (it builds; neither path needs a server), and run the two cheapest decisive measurements from
    `docs/validation_protocol.md`: each available phone model overnight on a ground-floor slab for its
    noise floor, and the same phones overnight on an upper floor of one tall and one mid-rise
    building. These two numbers replace the two largest assumptions in every table above and say

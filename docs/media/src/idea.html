@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>QuakeScore: the idea</title>
+<link rel="stylesheet" href="media.css">
+<style>
+  .row { display: grid; grid-template-columns: 1fr 44px 1fr 44px 1fr; align-items: stretch; margin-top: 34px; flex: 1; min-height: 0; }
+  .step { display: flex; flex-direction: column; padding: 22px 26px 24px; }
+  .step svg { width: 100%; height: 318px; display: block; margin-bottom: 16px; }
+  .arrow { display: grid; place-items: center; }
+  .foot { padding-top: 22px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">QuakeScore &middot; the idea</div>
+  <h1>Every building hums at its own pitch.</h1>
+  <p class="sub">Phones lying still at night can pick up that hum. Its pitch, and how quickly it dies away, say how the building will move in an earthquake.</p>
+
+  <div class="row">
+    <section class="card step">
+      <svg viewBox="0 0 400 262" aria-hidden="true">
+        <!-- night sky -->
+        <circle cx="338" cy="44" r="20" fill="#e8e8ed"/>
+        <circle cx="347" cy="38" r="18" fill="#ffffff"/>
+        <circle cx="52" cy="40" r="2.4" fill="#d2d2d7"/><circle cx="92" cy="72" r="1.8" fill="#d2d2d7"/>
+        <circle cx="300" cy="96" r="1.8" fill="#d2d2d7"/><circle cx="368" cy="118" r="2.2" fill="#d2d2d7"/>
+        <!-- sway ghost -->
+        <g transform="translate(0 244) skewX(-3.2) translate(0 -244)">
+          <rect x="130" y="36" width="140" height="208" rx="4" fill="none" stroke="#0071e3" stroke-opacity=".35" stroke-width="2" stroke-dasharray="5 6"/>
+        </g>
+        <g transform="translate(0 244) skewX(3.2) translate(0 -244)">
+          <rect x="130" y="36" width="140" height="208" rx="4" fill="none" stroke="#0071e3" stroke-opacity=".35" stroke-width="2" stroke-dasharray="5 6"/>
+        </g>
+        <!-- building -->
+        <rect x="130" y="36" width="140" height="208" rx="4" fill="#fbfbfd" stroke="#1d1d1f" stroke-width="2.6"/>
+        <g stroke="#d2d2d7" stroke-width="2">
+          <line x1="131" y1="65.7" x2="269" y2="65.7"/><line x1="131" y1="95.4" x2="269" y2="95.4"/>
+          <line x1="131" y1="125.1" x2="269" y2="125.1"/><line x1="131" y1="154.8" x2="269" y2="154.8"/>
+          <line x1="131" y1="184.5" x2="269" y2="184.5"/><line x1="131" y1="214.2" x2="269" y2="214.2"/>
+        </g>
+        <!-- phones lying flat on tables -->
+        <g id="phones"></g>
+        <!-- sway arrow -->
+        <g stroke="#0071e3" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M164 20 H236"/><path d="M171 13 l-8 7 8 7"/><path d="M229 13 l8 7 -8 7"/>
+        </g>
+        <!-- ground -->
+        <line x1="40" y1="245" x2="360" y2="245" stroke="#1d1d1f" stroke-width="2.6" stroke-linecap="round"/>
+      </svg>
+      <h2><span class="num">1</span>Phones at rest</h2>
+      <p>On a charger, lying flat, overnight. The motion sensor feels the building sway by thousandths of a millimetre.</p>
+    </section>
+
+    <div class="arrow"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M5 15h19M17 7l8 8-8 8" fill="none" stroke="#6e6e73" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+    <section class="card step">
+      <svg viewBox="0 0 400 262" id="spec" aria-hidden="true"></svg>
+      <h2><span class="num">2</span>Stack the nights</h2>
+      <p>One night shows only the phone's own noise. Many nights from many phones, added up, let the building's pitch rise out of it.</p>
+    </section>
+
+    <div class="arrow"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M5 15h19M17 7l8 8-8 8" fill="none" stroke="#6e6e73" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+    <section class="card step">
+      <svg viewBox="0 0 400 262" aria-hidden="true">
+        <rect x="14" y="10" width="372" height="242" rx="20" fill="#f5f5f7"/>
+        <text x="38" y="50" font-size="17" font-weight="650" fill="#6e6e73" letter-spacing="1.2">QUAKESCORE</text>
+        <rect x="290" y="30" width="74" height="28" rx="14" fill="#e8e8ed"/>
+        <text x="327" y="49.5" font-size="14" font-weight="700" fill="#6e6e73" text-anchor="middle" letter-spacing=".8">EXAMPLE</text>
+        <text x="36" y="124" font-size="78" font-weight="700" fill="#1d1d1f" letter-spacing="-3">62</text>
+        <text x="140" y="100" font-size="18" fill="#6e6e73">likely range</text>
+        <text x="140" y="124" font-size="22" font-weight="650" fill="#1d1d1f">54 to 70</text>
+        <!-- scale -->
+        <rect x="38" y="150" width="324" height="12" rx="6" fill="#e0e0e5"/>
+        <rect x="213" y="150" width="52" height="12" rx="6" fill="#0071e3" fill-opacity=".32"/>
+        <circle cx="239" cy="156" r="10" fill="#0071e3" stroke="#f5f5f7" stroke-width="3"/>
+        <text x="38" y="184" font-size="14.5" fill="#6e6e73">more vulnerable</text>
+        <text x="362" y="184" font-size="14.5" fill="#6e6e73" text-anchor="end">less vulnerable</text>
+        <line x1="38" y1="198" x2="362" y2="198" stroke="#d2d2d7" stroke-width="1.5"/>
+        <text x="38" y="226" font-size="16.5" fill="#6e6e73">Pitch</text>
+        <text x="92" y="226" font-size="16.5" font-weight="650" fill="#1d1d1f">1.24 Hz</text>
+        <text x="206" y="226" font-size="16.5" fill="#6e6e73">Damping</text>
+        <text x="286" y="226" font-size="16.5" font-weight="650" fill="#1d1d1f">2.1 %</text>
+      </svg>
+      <h2><span class="num">3</span>Score with a range</h2>
+      <p>The measurement updates an engineering model of that building type: a vulnerability score with its uncertainty, sold to insurers as data.</p>
+    </section>
+  </div>
+
+  <div class="foot">
+    <span><span class="pill">SIM</span>&nbsp; <b>Status:</b> every result so far comes from simulation. No real building has been measured yet.</span>
+    <span class="brand">QuakeScore</span>
+  </div>
+</div>
+
+<script>
+// Phones on four floors: a table line with a phone lying on it, in the accent colour.
+const floors = [65.7, 95.4, 125.1, 154.8, 184.5, 214.2, 243.9];
+const spots = [[0, 222], [2, 168], [3, 232], [5, 176]];
+document.getElementById("phones").innerHTML = spots.map(([i, x]) => {
+  const y = floors[i];
+  return `<line x1="${x - 16}" y1="${y - 9}" x2="${x + 16}" y2="${y - 9}" stroke="#6e6e73" stroke-width="2" stroke-linecap="round"/>
+    <line x1="${x - 11}" y1="${y - 9}" x2="${x - 11}" y2="${y - 1}" stroke="#6e6e73" stroke-width="2"/>
+    <line x1="${x + 11}" y1="${y - 9}" x2="${x + 11}" y2="${y - 1}" stroke="#6e6e73" stroke-width="2"/>
+    <rect x="${x - 10}" y="${y - 14.5}" width="20" height="5" rx="2" fill="#0071e3"/>`;
+}).join("");
+
+// Spectrum sketch: grey single nights (noise only) and the stacked result with the building's peak.
+let seed = 12345;
+const rnd = () => { seed = (seed + 0x6d2b79f5) >>> 0; let t = seed; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const gauss = () => Math.sqrt(-2 * Math.log(Math.max(rnd(), 1e-9))) * Math.cos(2 * Math.PI * rnd());
+const X0 = 46, X1 = 384, Y0 = 26, Y1 = 214, N = 150, f0 = 0.43;
+const base = (u) => 0.60 - 0.20 * u;                         // noise floor falling gently with frequency
+const peak = (u) => 0.34 / (1 + Math.pow((u - f0) / 0.022, 2));
+const toPath = (fn) => Array.from({ length: N }, (_, i) => { const u = i / (N - 1); return `${i ? "L" : "M"}${(X0 + u * (X1 - X0)).toFixed(1)} ${(Y1 - fn(u) * (Y1 - Y0)).toFixed(1)}`; }).join(" ");
+let s = `<line x1="${X0}" y1="${Y0 - 8}" x2="${X0}" y2="${Y1}" stroke="#d2d2d7" stroke-width="2"/><line x1="${X0}" y1="${Y1}" x2="${X1}" y2="${Y1}" stroke="#d2d2d7" stroke-width="2"/>`;
+for (let k = 0; k < 5; k++) s += `<path d="${toPath((u) => base(u) + 0.115 * gauss() + 0.02 * peak(u))}" fill="none" stroke="#c4c4cb" stroke-width="1.3" stroke-linejoin="round"/>`;
+s += `<path d="${toPath((u) => base(u) - 0.05 + 0.012 * gauss() + peak(u))}" fill="none" stroke="#0071e3" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+const px = X0 + f0 * (X1 - X0), py = Y1 - (base(f0) - 0.05 + 0.34) * (Y1 - Y0);
+s += `<text x="${px + 16}" y="${py + 4}" font-size="16.5" font-weight="650" fill="#0071e3">the building's pitch</text>`;
+s += `<text x="${X1}" y="${Y1 + 26}" font-size="15" fill="#6e6e73" text-anchor="end">frequency</text>`;
+s += `<text transform="translate(${X0 - 16} ${Y0 - 6}) rotate(-90)" font-size="15" fill="#6e6e73" text-anchor="end">vibration</text>`;
+s += `<line x1="${X0 + 6}" y1="${Y1 + 21}" x2="${X0 + 30}" y2="${Y1 + 21}" stroke="#c4c4cb" stroke-width="1.6"/><text x="${X0 + 36}" y="${Y1 + 26}" font-size="15" fill="#6e6e73">one night</text>`;
+s += `<line x1="${X0 + 122}" y1="${Y1 + 21}" x2="${X0 + 146}" y2="${Y1 + 21}" stroke="#0071e3" stroke-width="3.2" stroke-linecap="round"/><text x="${X0 + 152}" y="${Y1 + 26}" font-size="15" fill="#6e6e73">stacked</text>`;
+document.getElementById("spec").innerHTML = s;
+window.__ready = true;
+</script>
+</body>
+</html>

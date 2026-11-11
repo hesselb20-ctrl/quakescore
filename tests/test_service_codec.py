@@ -166,3 +166,13 @@ def test_cells_and_geo():
     assert not geo.contains(sq, 37.7910, -122.3997)
     d = geo.distance_m(sq, 37.7904 + 20 / 111320, -122.3997)
     assert abs(d - 20) < 0.5
+
+
+def test_unknown_sync_and_missing_battery_are_accepted():
+    """The app sends sync_sigma_ms -1 when it has no time source; browsers send null battery levels."""
+    p = codec.encode(make_features())
+    p.update(sync_source="none", sync_sigma_ms=-1, battery_start=None, battery_end=None)
+    sf = codec.decode(p)
+    assert sf.sync_source == "none" and sf.sync_sigma_ms == -1
+    _bad(lambda q: q.update(sync_source="ntp", sync_sigma_ms=-1))
+    _bad(lambda q: q.update(sync_source="none", sync_sigma_ms=-5))

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>QuakeScore: the purpose</title>
+<link rel="stylesheet" href="media.css">
+<style>
+  .grid { display: grid; grid-template-columns: 1.18fr 1fr; gap: 20px; margin-top: 30px; flex: 1; min-height: 0; }
+  .left { display: flex; flex-direction: column; padding: 28px 32px; }
+  .left h2 { font-size: 27px; }
+  .caption { font-size: 18px; color: var(--ink3); margin-top: 2px; }
+  .bands { margin-top: 22px; display: grid; gap: 24px; }
+  .bandrow .lab { display: flex; justify-content: space-between; align-items: baseline; font-size: 20px; color: var(--ink2); margin-bottom: 9px; }
+  .bandrow .lab b { font-size: 23px; color: var(--ink); font-weight: 650; }
+  .bandrow .lab span.w { font-variant-numeric: tabular-nums; font-weight: 650; color: var(--ink); }
+  .track { position: relative; height: 30px; border-radius: 15px; background: var(--faint); }
+  .track i { position: absolute; top: 0; bottom: 0; border-radius: 15px; }
+  .track u { position: absolute; top: 5px; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 5px solid; margin-left: -10px; }
+  .axis { display: flex; justify-content: space-between; font-size: 15.5px; color: var(--ink3); margin-top: 8px; }
+  .big { margin-top: auto; display: flex; align-items: baseline; gap: 18px; padding-top: 20px; border-top: 1.5px solid var(--faint); }
+  .big .n { font-size: 66px; font-weight: 700; letter-spacing: -.03em; color: var(--accent); line-height: 1; }
+  .big .t { font-size: 20px; color: var(--ink2); line-height: 1.35; }
+  .right { display: grid; gap: 16px; grid-template-rows: repeat(3, 1fr); }
+  .right .card { padding: 22px 26px; display: flex; flex-direction: column; justify-content: center; }
+  .right h2 { font-size: 23px; margin-bottom: 6px; }
+  .right p { font-size: 19px; }
+  .not h2 { color: var(--warm-text); }
+  .foot { padding-top: 18px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">The purpose</div>
+  <h1>Insurers price earthquake risk from a few attributes. A measurement narrows the guess.</h1>
+
+  <div class="grid">
+    <section class="card left">
+      <h2>How well one building's score is known <span class="pill">SIM</span></h2>
+      <div class="caption">Median width of the 5 to 95% range, in score points out of 100. The position shown is an example.</div>
+      <div class="bands">
+        <div class="bandrow">
+          <div class="lab"><span><b>Today:</b> year built, construction type, storeys</span><span class="w">15.7 points</span></div>
+          <div class="track"><i style="left:52.15%;width:15.7%;background:#b9b9c1"></i><u style="left:60%;border-color:#6e6e73"></u></div>
+        </div>
+        <div class="bandrow">
+          <div class="lab"><span><b>With QuakeScore:</b> plus the measured period</span><span class="w">8.9 points</span></div>
+          <div class="track"><i style="left:58.45%;width:8.9%;background:#0071e3;opacity:.36"></i><u style="left:62.9%;border-color:#0071e3"></u></div>
+          <div class="axis"><span>0 &middot; more vulnerable</span><span>less vulnerable &middot; 100</span></div>
+        </div>
+      </div>
+      <div class="big">
+        <div class="n">43%</div>
+        <div class="t">narrower range once the building's own period is measured, and the score itself moves by a median of 2.9 points.</div>
+      </div>
+    </section>
+
+    <div class="right">
+      <section class="card">
+        <h2>Who it is for</h2>
+        <p>Insurers, reinsurers and catastrophe modellers, and owners of large building portfolios.</p>
+      </section>
+      <section class="card">
+        <h2>What they get</h2>
+        <p>A score with its range for each building, the measured pitch and damping behind it, and an alert when a building's stiffness changes.</p>
+      </section>
+      <section class="card not">
+        <h2>What it is not</h2>
+        <p>Not a structural engineering assessment and not a condemnation notice. It is risk information for screening and pricing.</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="foot">
+    <span>Source: <b>results/m5_summary.md</b>, simulated buildings with Hazus 6.1 class parameters. Not yet checked on real buildings.</span>
+    <span class="brand">QuakeScore</span>
+  </div>
+</div>
+<script>window.__ready = true;</script>
+</body>
+</html>

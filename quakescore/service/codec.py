@@ -249,11 +249,12 @@ def validate(p: dict, *, now: float | None = None) -> Upload:
         "fs_raw": _num(p, "fs_raw", 20, 2000),
         "lsb": _num(p, "lsb", 0, 1),
         "sync_source": _enum(p, "sync_source", SYNC_SOURCES),
-        "sync_sigma_ms": _num(p, "sync_sigma_ms", 0, 1e7),
+        "sync_sigma_ms": _num(p, "sync_sigma_ms", -1, 1e7),
         "accept_fraction": _num(p, "accept_fraction", 0, 1),
         "temp_c": _num(p, "temp_c", -40, 90, nullable=True),
-        "battery_start": _num(p, "battery_start", 0, 100, integer=True),
-        "battery_end": _num(p, "battery_end", 0, 100, integer=True),
+        # null when the platform exposes no battery level (browsers on iOS)
+        "battery_start": _num(p, "battery_start", 0, 100, integer=True, nullable=True),
+        "battery_end": _num(p, "battery_end", 0, 100, integer=True, nullable=True),
         "charging": charging,
         "platform": _enum(p, "platform", PLATFORMS),
         "app_version": _text(p, "app_version"),
@@ -261,6 +262,9 @@ def validate(p: dict, *, now: float | None = None) -> Upload:
     }
     if meta["lsb"] <= 0:
         raise CodecError("lsb", "must be positive")
+    # -1 is the agreed value for "uncertainty unknown" and is only valid without a sync source
+    if meta["sync_sigma_ms"] < 0 and not (meta["sync_sigma_ms"] == -1 and meta["sync_source"] == "none"):
+        raise CodecError("sync_sigma_ms", "must be >= 0, or exactly -1 with sync_source 'none'")
 
     bands_in = p.get("bands")
     if not isinstance(bands_in, dict) or not bands_in:

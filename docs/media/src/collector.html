@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>QuakeScore: the collector</title>
+<link rel="stylesheet" href="media.css">
+<style>
+  .grid { display: grid; grid-template-columns: 1fr auto; gap: 44px; flex: 1; min-height: 0; }
+  .text { display: flex; flex-direction: column; padding-top: 4px; }
+  h1 { font-size: 48px; }
+  .sub { font-size: 23px; }
+  .points { margin: 26px 0 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+  .points li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; font-size: 19.5px; line-height: 1.38; color: var(--ink2); }
+  .points svg { width: 24px; height: 24px; margin-top: 2px; }
+  .phones { display: flex; gap: 26px; align-items: flex-start; }
+  .phone { width: 320px; }
+  .bezel { width: 320px; height: 670px; border-radius: 46px; background: #1d1d1f; padding: 10px; box-shadow: 0 18px 40px rgba(0, 0, 0, .10); }
+  .screen { width: 300px; height: 650px; border-radius: 37px; overflow: hidden; background: #f5f5f7; }
+  .screen iframe { width: 375px; height: 812.5px; border: 0; transform: scale(.8); transform-origin: 0 0; display: block; }
+  .label { margin-top: 14px; text-align: center; font-size: 19px; font-weight: 600; color: var(--ink); }
+  .label .num { width: 28px; height: 28px; font-size: 15px; margin-right: 8px; vertical-align: 2px; }
+  .foot { padding-top: 10px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="grid">
+    <div class="text">
+      <div class="eyebrow">The collector</div>
+      <h1>It runs in a phone browser. Nothing is sent anywhere.</h1>
+      <p class="sub">The first real measurement needs no app store and no server. Open a page, leave the phone on its charger, save one small file in the morning.</p>
+      <ul class="points" id="points"></ul>
+      <div class="foot">
+        <span><span class="pill">SIM</span>&nbsp; The screens show the real page, fed with simulated sensor readings.</span>
+      </div>
+    </div>
+    <div class="phones">
+      <div class="phone"><div class="bezel"><div class="screen" id="s1"></div></div><div class="label"><span class="num">1</span>Set up</div></div>
+      <div class="phone"><div class="bezel"><div class="screen" id="s2"></div></div><div class="label"><span class="num">2</span>Leave it overnight</div></div>
+      <div class="phone"><div class="bezel"><div class="screen" id="s3"></div></div><div class="label"><span class="num">3</span>Save the file</div></div>
+    </div>
+  </div>
+</div>
+<script type="module">
+const points =["Works on iPhone and Android, in the browser the phone already has.", "Same signal processing as the Android app, checked against the same reference data.", "Only vibration spectra are kept. No sound, no location, no raw recording."];
+document.getElementById("points").innerHTML = points.map((t) =>
+  `<li><svg viewBox="0 0 24 24" fill="none" stroke="#0071e3" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><span>${t}</span></li>`).join("");
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Loads the real collector page into a phone frame and returns its window.
+async function open(slot) {
+  const frame = document.createElement("iframe");
+  frame.setAttribute("scrolling", "no");
+  const done = new Promise((r) => frame.addEventListener("load", r, { once: true }));
+  frame.src = "/web/collector/index.html";
+  document.getElementById(slot).appendChild(frame);
+  await done;
+  await sleep(300);
+  const win = frame.contentWindow;
+  try { win.localStorage.clear(); } catch (e) { /* storage blocked: nothing to clear */ }
+  win.document.getElementById("recover").hidden = true;
+  return win;
+}
+
+// Starts a session and feeds it sensor readings: gravity plus white noise, quantised like a real sensor.
+async function record(win, name, floor, seconds) {
+  const doc = win.document;
+  if (win.DeviceMotionEvent) win.DeviceMotionEvent.requestPermission = async () => "granted";   // stands in for tapping Allow
+  const every = win.setInterval.bind(win);
+  win.setInterval = (fn, ms) => every(fn, ms === 60000 ? 400 : ms);       // first noise reading without the one-minute wait
+  doc.getElementById("building").value = name;
+  doc.getElementById("floor").value = String(floor);
+  doc.getElementById("start").click();
+  await sleep(700);
+  const fs = 59.94, n = Math.round(seconds * fs), lsb = 0.0012;
+  let seed = 7;
+  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const gauss = () => Math.sqrt(-2 * Math.log(rnd() + 1e-12)) * Math.cos(2 * Math.PI * rnd());
+  const q = (v) => Math.round(v / lsb) * lsb;
+  const t0 = win.performance.now();
+  for (let i = 0; i < n; i++) {
+    const ev = new win.Event("devicemotion");
+    Object.defineProperty(ev, "timeStamp", { value: t0 + (i * 1000) / fs });
+    Object.defineProperty(ev, "accelerationIncludingGravity", { value: { x: q(0.02 + 0.004 * gauss()), y: q(-0.03 + 0.004 * gauss()), z: q(9.806 + 0.004 * gauss()) } });
+    win.dispatchEvent(ev);
+    if (i % 60000 === 59999) await sleep(0);                               // keep the page responsive
+  }
+  const shown = Date.now() + seconds * 1000;
+  win.Date.now = () => shown;                                              // the clock shows the simulated duration
+  await sleep(1700);
+}
+
+const [a, b, c] = await Promise.all([open("s1"), open("s2"), open("s3")]).catch((e) => { document.title = "error: " + e; return []; });
+if (a) {
+  a.document.getElementById("building").value = "Home";
+  a.document.getElementById("floor").value = "4";
+  await record(b, "Home", 4, 42 * 60);
+  await record(c, "Home", 4, 7 * 3600 + 12 * 60);
+  c.document.getElementById("stop").click();
+  await sleep(900);
+}
+window.__ready = true;
+</script>
+</body>
+</html>

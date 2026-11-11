@@ -54,7 +54,8 @@ def main() -> None:
         for s in sessions:
             k = "/".join(str(s.bands[b].k) for b in "LMH")
             print(f"   {s.phone_model[:24]:24s} | {s.floor:3d} | {s.duration / 3600:5.2f} | {k:14s} | "
-                  f"{100 * s.accept_fraction:5.1f}% | {noise_floor_ug(s):7.1f} | {s.sync_source} +-{s.sync_sigma_ms:.0f} ms")
+                  f"{100 * s.accept_fraction:5.1f}% | {noise_floor_ug(s):7.1f} | "
+                  + (f"{s.sync_source} +-{s.sync_sigma_ms:.0f} ms" if s.sync_sigma_ms >= 0 else f"{s.sync_source} (uncertainty unknown)"))
         modes = apply(identify(sessions, n_boot=200 if len(sessions) >= 2 else 0, rng=np.random.default_rng(0)))
         if not modes:
             print("   no candidate peaks above the detection threshold")

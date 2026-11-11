@@ -2,8 +2,8 @@
 
 **Status: compiles and passes its tests; not yet run on a phone.**
 
-- `:dsp-core:test`: 9 of 9 tests pass. The compiled Kotlin signal processing reproduces the Python
-  reference on both streaming test vectors, in all three bands, to about 5e-7 relative.
+- `:dsp-core:test`: 10 of 10 tests pass. The compiled Kotlin signal processing reproduces the Python
+  reference on all three streaming test vectors, in all three bands, to about 5e-7 relative.
 - `:app:assembleDebug`: builds a debug APK (about 3.3 MB). The app code compiled without changes; one
   bookkeeping fix was needed in `dsp-core` (samples arriving after a session ends are now counted, as
   the reference does).
