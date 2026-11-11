@@ -1,0 +1,725 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><title>QuakeScore technical note</title><style>
+@page { size: A4; margin: 17mm 16mm 17mm 16mm; }
+html { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; font-size: 9.6pt; line-height: 1.42; color: #0b0b0b; }
+body { margin: 0; }
+h1 { font-size: 20pt; margin: 0 0 2mm; letter-spacing: -0.01em; }
+h2 { font-size: 12.5pt; margin: 6mm 0 1.5mm; break-after: avoid; }
+h3 { font-size: 10.2pt; margin: 4mm 0 1mm; break-after: avoid; }
+p { margin: 0 0 2.2mm; }
+ul, ol { margin: 0 0 2.2mm; padding-left: 5mm; }
+li { margin-bottom: 0.8mm; }
+table { border-collapse: collapse; width: 100%; margin: 1.5mm 0 3mm; font-size: 8.4pt; break-inside: avoid; }
+th { text-align: left; font-weight: 600; color: #52514e; border-bottom: 0.8pt solid #b9b8b2; padding: 1.2mm 1.6mm; }
+td { border-bottom: 0.4pt solid #e4e3de; padding: 1.1mm 1.6mm; vertical-align: top; }
+img { max-width: 100%; display: block; margin: 2mm auto 1mm; break-inside: avoid; }
+code { font-family: Consolas, monospace; font-size: 8.6pt; }
+blockquote { margin: 2mm 0 3mm; padding: 2mm 3.5mm; background: #f3f2ee; border-radius: 2.5mm; break-inside: avoid; }
+blockquote p:last-child { margin-bottom: 0; }
+.lede { font-size: 11pt; color: #52514e; margin-bottom: 4mm; }
+.pagebreak { break-before: page; }
+em.label { font-style: normal; font-size: 7.6pt; font-weight: 600; letter-spacing: 0.04em; padding: 0.3mm 1.6mm; border-radius: 1.6mm;
+           background: #fff1d6; color: #7a4b00; white-space: nowrap; }
+</style></head><body><h1>QuakeScore: measured building dynamics for seismic risk models</h1>
+<p class="lede">Technical note for reinsurers and catastrophe modellers. November 2026.</p>
+
+<blockquote>
+<p><strong>Status, stated first.</strong> The method is built end to end and measured in simulation. It has <strong>not</strong>
+been measured on a real building yet: the collector app is written but has not been compiled or run,
+and no real session exists. Every result in this note is labelled. <em class="label">SIM</em> is simulator output, <em class="label">REF</em>
+is a cited publication, <em class="label">ASSUMED</em> is an engineering assumption not yet measured, <em class="label">REAL</em> would be a
+measurement on a real building and appears nowhere below. A pilot partner is asked to help close
+exactly that gap (section 10).</p>
+</blockquote>
+<h2>1. The problem and the idea</h2>
+<p>Catastrophe models assign a building's seismic vulnerability from proxies: construction class, age,
+height band. Two buildings with the same labels can differ by a factor of two in lateral stiffness,
+and the model cannot see it. The physical quantities that govern response are the natural
+frequencies, damping and mode shapes, and they are measurable: every building sways by a few
+micro-g under wind, traffic and footfall.</p>
+<p>QuakeScore reads that sway with the accelerometers already inside the building. A phone lying still
+overnight on a desk or nightstand records it. One night from one phone is far too noisy to use. Many
+nights from many phones, stacked per building, are not. The output is a per-building record: first
+natural frequencies and damping with intervals, a structural-class probability, a stiffness anomaly
+against the class, damage-state probabilities for standard shaking scenarios, a 0-100 score with an
+uncertainty band, and a frequency history that flags lasting stiffness loss.</p>
+<p>What it is: a statistical screening layer that replaces a guess with a measurement where coverage
+allows. What it is not: a structural engineering assessment of any individual building.</p>
+<h2>2. What is already known, and what is not</h2>
+<p>Three published results set the starting point <em class="label">REF</em>; full citations are in <code>docs/references.md</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Study</th>
+<th>What it showed</th>
+<th>What it did not show</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kong et al. 2018, Seismological Research Letters</td>
+<td>25 phones on one floor of Millikan Library recovered 1.2, 1.7 and about 2.4 Hz during a forced (shaker) test</td>
+<td>Ambient recovery, which the authors name as future work</td>
+</tr>
+<tr>
+<td>Patel et al. 2023, Sensors</td>
+<td>Earthquake-triggered phone recordings gave fundamental frequencies for 7 buildings of 3-18 storeys; repeats agreed within 7%</td>
+<td>The authors judged ambient measurement infeasible at phone noise levels</td>
+</tr>
+<tr>
+<td>Kumar et al. 2025, Journal of Building Engineering</td>
+<td>Ambient phone data over about 6 months recovered the first modes of 4 tall buildings (54-197 m), for example 0.47 Hz against a 0.48 Hz reference</td>
+<td>Short buildings: many recordings rejected for low signal-to-noise</td>
+</tr>
+</tbody>
+</table>
+<p>Two consequences shape this product. First, ambient identification with phones is demonstrated only
+for tall buildings; low- and mid-rise coverage is an open question that our own simulation also flags
+as the hard case (section 5). Second, none of these papers names insurers or risk transfer as an
+application, and no catastrophe model uses such data. The method is known; the fleet pipeline and the
+mapping to vulnerability are the new parts.</p>
+<p>One number is unresolved and matters: published phone noise spectra for recent models sit roughly
+12-20 dB below the noise densities in sensor datasheets (70-180 ug/sqrt(Hz)). We design against the
+datasheet values, which is the pessimistic case, and show the optimistic case as a sensitivity.</p>
+<h2>3. Method</h2>
+<p><strong>On the phone.</strong> The app records only when the phone is flat, still, screen-off and (by default)
+charging. Samples are resampled to a common UTC-anchored grid, low-pass filtered to 20 Hz and
+decimated; nothing above 25 Hz survives, which rules out audio by construction. The phone computes
+windowed cross-spectral matrices in three zoom bands (0.1-1.25, 1.25-5 and 5-20 Hz, each resolving
+0.5% of frequency or better) and uploads only those averages, a building id, a floor estimate and
+clock-sync quality: about 150 kB per night. Raw samples never leave the phone and are never stored.
+The only position that leaves the phone is a point rounded to about 1 km, used once to fetch nearby
+footprints so the building can be picked on the device.</p>
+<p><strong>Per building.</strong> Sessions are stacked with inverse-variance weights using the rotation-invariant
+horizontal trace, so a phone's unknown compass orientation does not matter. Sensor noise appears as a
+smooth floor; a mode appears as a narrow bump of known shape. A matched filter scans frequency and
+damping for bumps, an iterative detect-fit-subtract loop separates neighbouring modes (including the
+two horizontal directions when they are close), and each mode is estimated by a likelihood fit of the
+single-mode response shape. Intervals come from a bootstrap over sessions, widened for small samples
+and for model error.</p>
+<p><strong>Rejecting what is not the building.</strong> A candidate must pass all of: a width test (machinery tones
+are narrower than any structure, furniture resonances broader); a tone test and a burst test on the
+per-window statistics; a vertical test (a lateral building mode has no vertical motion, floor-borne
+machinery does); a support test and a single-session test (the peak must be present in the sessions
+themselves, and not in one night only); a fleet test (a frequency that one phone model reports across
+many unrelated buildings is the phone, not the building); a detection threshold; and a mode-order
+check, which refuses to score when the lowest identified peak may be a second mode.</p>
+<p><strong>Privacy.</strong> Opt-in, plain-language consent. Outputs for a building are released only when at least
+3 contributors and 5 sessions are combined, so one household's presence cannot be inferred.</p>
+<h2>4. Identification under sensor noise</h2>
+<p><img alt="Stacked spectrum" src="figures/fig1_principle.png" /></p>
+<p>In the example above <em class="label">SIM</em> the peak is about a third of the height of the noise floor. One night shows
+nothing reliable; twenty nights give both first modes within 0.2% in frequency.</p>
+<p>We implemented five estimators and let the simulator choose <em class="label">SIM</em>. Sessions were generated by a full
+time-domain simulation (building response, phone noise, quantisation, non-nominal sample rate,
+timestamp jitter, tilt, furniture coupling) and processed by the same pipeline the phone runs.</p>
+<p><img alt="Estimator comparison" src="figures/fig3_methods.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Regime</th>
+<th>Curve fit</th>
+<th>SSI-COV</th>
+<th>EFDD</th>
+<th>FDD peak pick</th>
+<th>Random decrement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frequency error, peak below noise floor</td>
+<td>0.11%</td>
+<td>0.31%</td>
+<td>0.44%</td>
+<td>0.58%</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Frequency error, peak above noise floor</td>
+<td>0.05%</td>
+<td>0.11%</td>
+<td>0.05%</td>
+<td>0.11%</td>
+<td>n/a</td>
+</tr>
+<tr>
+<td>Damping error, peak below noise floor</td>
+<td>10%</td>
+<td>42%</td>
+<td>40%</td>
+<td>n/a</td>
+<td>152%</td>
+</tr>
+<tr>
+<td>Damping error, peak above noise floor</td>
+<td>8%</td>
+<td>12%</td>
+<td>6%</td>
+<td>n/a</td>
+<td>34%</td>
+</tr>
+</tbody>
+</table>
+<p>Median absolute errors, 105 identified modes <em class="label">SIM</em>. The production estimator is the curve fit; EFDD and
+SSI-COV are kept as cross-checks when the peak clears the noise floor. Frequency is the robust
+output. Damping is usable but soft: its 90% interval is typically 39% of the value wide, and it
+covers the truth in 87% of cases in simulation (95% for frequency). We report damping with its
+interval and do not let it drive the score unless the interval is tight.</p>
+<p>Detector false alarms on pure noise, with no structure present: 1.25% of building stacks at a
+detection score of 6 and none in 400 stacks at a score of 7 <em class="label">SIM</em>. The release threshold is 7, or 6
+when two contributors see the peak independently.</p>
+<div class="pagebreak"></div>
+
+<h2>5. Detection limit by building height</h2>
+<p>Whether a mode can be found depends on one ratio: the mode's peak spectral density over the phone's
+noise density. Record length, number of nights and number of phones then buy detection as the square
+root of the amount of data.</p>
+<p><img alt="Detection limit" src="figures/fig2_detection_limit.png" /></p>
+<p>Nights needed before the first mode is found within 2% in at least 90% of trials (6-hour nights, one phone per night on the
+top floor unless stated, random orientation, 15% of phones on soft surfaces) <em class="label">SIM</em>. <code>&gt;50</code> means not reached in 50 nights.</p>
+<table>
+<thead>
+<tr>
+<th>Storeys</th>
+<th>Typical night: 80 / 150 / 300 ug phone</th>
+<th>Windy or busy night: 80 / 150 / 300 ug phone</th>
+<th>Same, phone at mid-height</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>10 / &gt;50 / &gt;50</td>
+<td>1 / 2 / &gt;50</td>
+<td>1 / 10 / &gt;50</td>
+</tr>
+<tr>
+<td>5</td>
+<td>20 / &gt;50 / &gt;50</td>
+<td>1 / 2 / &gt;50</td>
+<td>5 / &gt;50 / &gt;50</td>
+</tr>
+<tr>
+<td>9</td>
+<td>50 / &gt;50 / &gt;50</td>
+<td>1 / 5 / &gt;50</td>
+<td>2 / &gt;50 / &gt;50</td>
+</tr>
+<tr>
+<td>15</td>
+<td>50 / &gt;50 / &gt;50</td>
+<td>1 / 5 / &gt;50</td>
+<td>1 / 50 / &gt;50</td>
+</tr>
+<tr>
+<td>25</td>
+<td>&gt;50 / &gt;50 / &gt;50</td>
+<td>1 / 1 / &gt;50</td>
+<td>1 / 5 / &gt;50</td>
+</tr>
+<tr>
+<td>40</td>
+<td>20 / &gt;50 / &gt;50</td>
+<td>1 / 1 / 1</td>
+<td>1 / 1 / 2</td>
+</tr>
+</tbody>
+</table>
+<p>On quiet nights no height and no phone class reached a stable first mode within 50 nights. As a rule across all 171
+configurations: when the peak-to-noise power ratio of a single night is above 0.1, a stable first mode arrives within 5
+nights in more than 90% of cases; between 0.03 and 0.1 it arrives within 5 nights in 43% and within 50 in 86%; below 0.01
+it never arrives. Once detected, the median frequency error is 0.10% and the 90th percentile 0.5%.</p>
+<p>Sensitivity <em class="label">SIM</em>: with a 25 ug/sqrt(Hz) phone the same buildings of 3, 9 and 25 storeys need 1, 1 and 1 night(s) on a
+typical night, and 10, 20 and &gt;50 on a quiet one.</p>
+<p>Reading the result <em class="label">SIM</em>:</p>
+<ul>
+<li><strong>Excitation dominates.</strong> The same building moves from "one or two nights" to "not reached in 50
+  nights" between a windy or busy night and a quiet one. The excitation levels are assumptions
+  <em class="label">ASSUMED</em> taken from published ranges; they are the largest unknown and the first thing a pilot
+  measures.</li>
+<li><strong>Phone noise is next.</strong> Each halving of noise density is worth roughly a factor of 16 in nights.
+  If recent phones are as quiet as published fleet spectra imply (25 ug/sqrt(Hz) rather than 80-300),
+  most of the "not reached" cells close. Measuring real noise floors per phone model is therefore a
+  cheap, decisive early experiment.</li>
+<li><strong>Height helps through wind, not by itself.</strong> Tall buildings respond strongly to wind and are the
+  easy case, which matches the published record. Low-rise buildings depend on ground-borne noise and
+  are the hard case.</li>
+<li><strong>Floor matters.</strong> A phone at mid-height sees roughly half the first-mode amplitude of one at the
+  roof, so it needs about 16 times as many nights at the detection limit.</li>
+</ul>
+<p>Several phones recording the same night help more than the same number of separate nights if their
+clocks are synchronised: coherent processing of 4 phones gave about 3 times the detection score of
+stacking them incoherently, and 8 phones about 4 times, with no loss from clock errors up to 200 ms at
+these frequencies <em class="label">SIM</em>. The same data give first-mode shape amplitudes to about 2% RMS when the mode
+is well above the limit. This tier needs per-window spectra and is opt-in.</p>
+<h2>6. Non-structural peaks</h2>
+<p>Buildings are full of things that vibrate: fans, pumps, elevators, washing machines, and the phone
+itself. We built a labelled test <em class="label">SIM</em>: 48 buildings and 432 four-hour sessions simulated in the time domain, with three phone models (one carrying a self-noise resonance and a 1 Hz tick in every building), persistent HVAC tones and elevator rumble per building, appliances, mains aliases and footsteps per night, a quarter of the phones on soft surfaces, and calm and windy nights mixed. Thresholds were set on one such set and frozen; the numbers below come from a second, held-out set.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Candidate peaks</th>
+<th>Accepted as structural</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Structural</td>
+<td>80</td>
+<td>55</td>
+</tr>
+<tr>
+<td>Non-structural</td>
+<td>266</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Share non-structural</td>
+<td>76.9%</td>
+<td>9.8%</td>
+</tr>
+<tr>
+<td>Published modes (lowest three per building)</td>
+<td></td>
+<td>55 structural, 2 non-structural: <strong>3.5%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Three quarters of raw candidates are not the building. After rejection, 3.5% of the modes the product would publish are non-structural (2 of 57), and the reported fundamental is a true first mode in 34 of 36 buildings. The price is coverage: 31% of genuine structural candidates are rejected too, and 12 of 48 buildings get no fundamental. Appliances, HVAC tones, phone resonances and tick harmonics are almost all caught by the width test and the vertical test. What still gets through is mostly blends of closely spaced higher modes.</p>
+<p>Two honest limits. The thresholds were tuned on simulated interference and must be re-tuned on
+labelled real sessions. And a weak machine tone whose speed wanders by a fraction of a percent from
+night to night can imitate a lightly damped mode; the tests above catch it only when it is strong
+enough to register as a tone within a single night.</p>
+<h2>7. From measured dynamics to vulnerability</h2>
+<p><strong>Class.</strong> A prior over Hazus model building types from height, age, tags and a regional mix is
+updated with the likelihood of the measured period under each type's period-height relation. The
+class is reported as a distribution with a GEM taxonomy label.</p>
+<p><strong>Stiffness anomaly.</strong> The stiffness ratio is (expected period / measured period) squared under the
+most probable class. A flag is raised only if the building is softer than every plausible class by
+more than two standard deviations, because class and stiffness are otherwise confounded.</p>
+<p><strong>Fragility.</strong> We start from the published Hazus 6.1 capacity curve and structural fragility of the
+class <em class="label">REF</em>. The measured period rescales the elastic period, which moves the performance point found
+by the capacity spectrum method; where a mode shape is available, drift concentration in the lower
+storeys rescales the damage-state thresholds. Damage-state probabilities follow for PGA 0.15, 0.30
+and 0.60 g on a standard spectral shape.</p>
+<p><strong>Score.</strong> QuakeScore is 100 x (1 - weighted structural mean damage ratio) over those scenarios;
+100 is the least vulnerable. The band is the 5-95% interval from propagating the measurement
+bootstrap and the class probabilities.</p>
+<table>
+<thead>
+<tr>
+<th>Score for a class at its typical height, moderate code</th>
+<th>Stiffness 50% of expected</th>
+<th>70%</th>
+<th>as expected</th>
+<th>150%</th>
+<th>Drift concentration 1.5x</th>
+<th>2x</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mid-rise concrete frame (C1M)</td>
+<td>75.7</td>
+<td>77.7</td>
+<td>79.3</td>
+<td>80.6</td>
+<td>69.7</td>
+<td>62.0</td>
+</tr>
+<tr>
+<td>High-rise steel frame (S1H)</td>
+<td>66.5</td>
+<td>69.6</td>
+<td>72.3</td>
+<td>74.7</td>
+<td>60.5</td>
+<td>51.4</td>
+</tr>
+</tbody>
+</table>
+<p>The score responds only mildly to stiffness on its own (3 to 6 points for a halving) and strongly to
+drift concentration. Most of the value of a measured period comes through the class it implies.</p>
+<p>What a measurement adds <em class="label">SIM</em>: over 200 random buildings the 5-95% score band narrows from a median
+of 15.7 points with public attributes only to 8.9 points with a measured period, and the score moves
+by a median of 2.9 points and by more than 9.1 points for one building in ten.</p>
+<p>What it does not yet add: with height as the only covariate, the anomaly flag is weak. A building 30%
+softer than expected for its class is flagged 4% of the time, 50% softer 12%, 75% softer 50%, at a
+false-flag rate under 1% <em class="label">SIM</em>. Class scatter hides all but gross anomalies. Better covariates (plan
+dimensions, wall density, known structural system from an insurer's own schedule) are the lever, and
+they are data a pilot partner already holds.</p>
+<p><strong>Validation of the score.</strong> The adjustment is physics on top of a published framework; it has not
+been calibrated against observed damage. No open dataset pairs a pre-earthquake modal measurement
+with a post-earthquake damage grade for the same buildings, so building-level validation is not
+possible today. Class-level checks against reconnaissance data and expert ratings are the realistic
+next step. Until then the score's validity is inherited from Hazus, and the measured period should be
+read as the reliable deliverable.</p>
+<h2>8. Change detection</h2>
+<p>A building's frequency is tracked over time and regressed on outdoor temperature (and season and
+vibration amplitude when the series is long enough). A lasting step in the residual is tested at
+every admissible date. In the synthetic damage test <em class="label">SIM</em> a building is observed for a year and loses
+stiffness half-way through.</p>
+<p><img alt="Change detection" src="figures/fig4_change_detection.png" /></p>
+<p>Detection rate at a threshold set for 5% false alarms on loss-free runs <em class="label">SIM</em>. Each epoch is five nights; calm and windy
+nights alternate at random, so some epochs carry no usable signal.</p>
+<table>
+<thead>
+<tr>
+<th>Building and phone</th>
+<th>Sessions in the year</th>
+<th>Epochs usable</th>
+<th>2.5% loss</th>
+<th>5% loss</th>
+<th>10% loss</th>
+<th>20% loss</th>
+<th>Smallest loss detected 9 times in 10</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>9 storeys, 80 ug phone</td>
+<td>40</td>
+<td>81%</td>
+<td>33%</td>
+<td>47%</td>
+<td>60%</td>
+<td>70%</td>
+<td>not reached</td>
+</tr>
+<tr>
+<td>9 storeys, 80 ug phone</td>
+<td>60</td>
+<td>80%</td>
+<td>53%</td>
+<td>80%</td>
+<td>77%</td>
+<td>83%</td>
+<td>not reached</td>
+</tr>
+<tr>
+<td>9 storeys, 80 ug phone</td>
+<td>100</td>
+<td>83%</td>
+<td>90%</td>
+<td>100%</td>
+<td>100%</td>
+<td>100%</td>
+<td>2.5%</td>
+</tr>
+<tr>
+<td>9 storeys, 80 ug phone</td>
+<td>200</td>
+<td>84%</td>
+<td>47%</td>
+<td>100%</td>
+<td>97%</td>
+<td>100%</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>9 storeys, 150 ug phone</td>
+<td>40</td>
+<td>29%</td>
+<td>0%</td>
+<td>13%</td>
+<td>3%</td>
+<td>10%</td>
+<td>not reached</td>
+</tr>
+<tr>
+<td>9 storeys, 150 ug phone</td>
+<td>60</td>
+<td>28%</td>
+<td>10%</td>
+<td>13%</td>
+<td>20%</td>
+<td>30%</td>
+<td>not reached</td>
+</tr>
+<tr>
+<td>9 storeys, 150 ug phone</td>
+<td>100</td>
+<td>34%</td>
+<td>40%</td>
+<td>63%</td>
+<td>70%</td>
+<td>63%</td>
+<td>not reached</td>
+</tr>
+<tr>
+<td>9 storeys, 150 ug phone</td>
+<td>200</td>
+<td>41%</td>
+<td>63%</td>
+<td>67%</td>
+<td>67%</td>
+<td>73%</td>
+<td>not reached</td>
+</tr>
+<tr>
+<td>25 storeys, 80 ug phone</td>
+<td>40</td>
+<td>55%</td>
+<td>23%</td>
+<td>7%</td>
+<td>13%</td>
+<td>10%</td>
+<td>not reached</td>
+</tr>
+<tr>
+<td>25 storeys, 80 ug phone</td>
+<td>60</td>
+<td>55%</td>
+<td>23%</td>
+<td>43%</td>
+<td>43%</td>
+<td>43%</td>
+<td>not reached</td>
+</tr>
+<tr>
+<td>25 storeys, 80 ug phone</td>
+<td>100</td>
+<td>60%</td>
+<td>73%</td>
+<td>90%</td>
+<td>83%</td>
+<td>93%</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>25 storeys, 80 ug phone</td>
+<td>200</td>
+<td>59%</td>
+<td>57%</td>
+<td>93%</td>
+<td>100%</td>
+<td>100%</td>
+<td>5%</td>
+</tr>
+</tbody>
+</table>
+<p>Read across the table: a 5% stiffness loss (2.5% in frequency) is caught reliably with 100 or more sessions a year from
+80 ug phones, and is not caught reliably with 60 sessions or with 150 ug phones. Each cell has 30 trials, so individual
+rates carry roughly 9 points of sampling error.</p>
+<p>After temperature correction the residual scatter of the frequency series is 0.63% to 1.39%, set mostly by the assumed
+unobserved environmental term. The estimated step sizes are unbiased (a 10% stiffness loss is recovered as a 5% frequency
+drop). Tracking registers every epoch against reference modes identified in a baseline period, which uses all peaks
+jointly; an earlier version that re-detected peaks in each epoch failed because it sometimes latched onto the neighbouring mode.</p>
+<p>Published monitoring shows that frequencies wander by 0.3-3% with temperature, rain and wind, and
+that changes under about 0.5% cannot be tied to damage <em class="label">REF</em>. Our simulated environmental terms are
+assumptions at the mild end of that range, so the real floor may be higher.</p>
+<div class="pagebreak"></div>
+
+<h2>9. Coverage: demo district and a sample portfolio</h2>
+<p>The demo uses 687 real OpenStreetMap building footprints in downtown San Francisco [REAL footprints
+only]. Structures, contributors and sessions are simulated: one contributing phone per 1500 m2 of
+floor area, twelve nights each on average, a mix of phone noise classes and of calm and windy nights
+<em class="label">ASSUMED</em>.</p>
+<p><img alt="Demo district coverage" src="figures/fig5_demo_city.png" /></p>
+<p>Of 687 footprints, 222 are scored, 255 have sessions but not enough for a released result, and 210 have none <em class="label">SIM</em>. Coverage follows height: 131 of 142 buildings of 15 storeys or more are scored, 63 of 134 with 8 to 14, 21 of 180 with 4 to 7, and 7 of 231 with 1 to 3. Against the simulated truth the first-mode frequency has a median error of 0.04% and is within 5% in 94% of scored buildings; in 13 of 222 the pipeline reported the other horizontal direction or a higher mode as the fundamental. Of 25 buildings planted with 30-55% of expected stiffness, 8 were scored and 2 were flagged (3 flags in total). All 4 scored buildings given a 12% stiffness loss raised a frequency-drop alert, with 1 false alert among the other 218.</p>
+<p><img alt="Demo dashboard" src="figures/dashboard.png" /></p>
+<p><strong>Sample portfolio report</strong> <em class="label">SIM</em>. An insurer uploads addresses or coordinates and receives, per row,
+the match, the score with its band, the measured parameters and the coverage status.</p>
+<table>
+<thead>
+<tr>
+<th>Ref</th>
+<th>Storeys</th>
+<th>Status</th>
+<th>Sessions</th>
+<th>QuakeScore (5-95%)</th>
+<th>Class only</th>
+<th>f1 (Hz)</th>
+<th>Stiffness vs class</th>
+<th>Alerts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P-1000</td>
+<td>27</td>
+<td>scored</td>
+<td>120</td>
+<td><strong>88</strong> (76-93)</td>
+<td>88</td>
+<td>0.44</td>
+<td>167%</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1002</td>
+<td>24</td>
+<td>scored</td>
+<td>120</td>
+<td><strong>90</strong> (69-94)</td>
+<td>83</td>
+<td>0.90</td>
+<td>89%</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1003</td>
+<td>10</td>
+<td>scored</td>
+<td>120</td>
+<td><strong>65</strong> (43-82)</td>
+<td>71</td>
+<td>1.17</td>
+<td>86%</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1004</td>
+<td>58</td>
+<td>scored</td>
+<td>120</td>
+<td><strong>96</strong> (96-97)</td>
+<td>96</td>
+<td>0.24</td>
+<td>130%</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1009</td>
+<td>8</td>
+<td>scored</td>
+<td>120</td>
+<td><strong>79</strong> (39-91)</td>
+<td>66</td>
+<td>3.19</td>
+<td>108%</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1010</td>
+<td>52</td>
+<td>scored</td>
+<td>120</td>
+<td><strong>93</strong> (85-96)</td>
+<td>92</td>
+<td>0.42</td>
+<td>87%</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1011</td>
+<td>38</td>
+<td>scored</td>
+<td>120</td>
+<td><strong>90</strong> (82-94)</td>
+<td>90</td>
+<td>0.33</td>
+<td>149%</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1013</td>
+<td>6</td>
+<td>scored</td>
+<td>44</td>
+<td><strong>85</strong> (59-95)</td>
+<td>85</td>
+<td>3.59</td>
+<td>85%</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1015</td>
+<td>22</td>
+<td>scored</td>
+<td>120</td>
+<td><strong>88</strong> (77-92)</td>
+<td>86</td>
+<td>0.43</td>
+<td>135%</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1001</td>
+<td>10</td>
+<td>needs data</td>
+<td>11</td>
+<td>not released</td>
+<td>74</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1005</td>
+<td>6</td>
+<td>needs data</td>
+<td>22</td>
+<td>not released</td>
+<td>86</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>P-1006</td>
+<td>4</td>
+<td>no data</td>
+<td>0</td>
+<td>not released</td>
+<td>78</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>Portfolio of 40 locations of four storeys or more: 21 scored (52% coverage), median score 89, lowest decile below 70, median band width 17 points, 0 stiffness flags, 0 frequency-drop alerts. Twelve rows shown; addresses withheld because the scores are simulated.</p>
+<p>Coverage strategy. The detection limit says where to start: tall and mid-rise buildings in dense,
+windy, traffic-heavy districts, with recent phones. The app shows residents their building's status
+and how many more nights it needs, and rewards contributions in under-covered buildings. Distribution
+through a partner app (an insurer's policyholder app, a property manager's tenant app) reaches many
+phones in the same buildings at once, which is what the method needs.</p>
+<h2>10. Uncertainty, limits and what a pilot would settle</h2>
+<p>Every released number carries its interval and its provenance label; there is no interface that
+returns a score without its band.</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Status today</th>
+<th>What settles it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does it work on real buildings?</td>
+<td>Not measured [SIM only]</td>
+<td>5+ buildings of 3 to 30+ storeys with published modal values, protocol in <code>docs/validation_protocol.md</code></td>
+</tr>
+<tr>
+<td>How noisy are real phones?</td>
+<td>Datasheets and published spectra disagree by 12-20 dB</td>
+<td>One night on a ground-floor slab per phone model</td>
+</tr>
+<tr>
+<td>How strong is ambient excitation by building type?</td>
+<td>Assumed from published ranges</td>
+<td>The same pilot sessions</td>
+</tr>
+<tr>
+<td>Do the artefact thresholds hold?</td>
+<td>Tuned on simulated interference</td>
+<td>Labelled real sessions from the pilot buildings</td>
+</tr>
+<tr>
+<td>Is the score predictive of damage?</td>
+<td>Inherited from Hazus; adjustment unvalidated</td>
+<td>Class-level comparison with reconnaissance data; expert ratings; long-term, post-event follow-up</td>
+</tr>
+<tr>
+<td>Battery cost per night</td>
+<td>Not measured</td>
+<td>Collector field test; target under 3%</td>
+</tr>
+</tbody>
+</table>
+<p>What we ask of a pilot partner: access to a few tens of buildings where the structural system is
+known from engineering reports, a channel to occupants willing to opt in, and the partner's own view
+of which output is worth paying for: the measured period as a model input, the anomaly flag for
+underwriting referral, or the change alert after an event.</p></body></html>
