@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>QuakeScore demo map</title>
+  <meta name="description" content="Statistical seismic screening layer from phone vibration measurements. Not a structural engineering assessment.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <header class="topbar glass" role="banner">
+    <div class="brand"><strong>QuakeScore</strong><span id="areaName">Downtown San Francisco demo</span></div>
+    <div id="provBanner" class="prov-banner" role="status" aria-live="polite"><span class="dot" aria-hidden="true"></span><span>Loading data</span></div>
+    <div class="layer-wrap">
+      <div class="segmented" role="radiogroup" aria-label="Map layer">
+        <label><input type="radio" name="layer" value="score" checked><span>QuakeScore</span></label>
+        <label><input type="radio" name="layer" value="stiffness"><span>Stiffness</span></label>
+        <label><input type="radio" name="layer" value="drift"><span>Drift</span></label>
+        <label><input type="radio" name="layer" value="coverage"><span>Coverage</span></label>
+      </div>
+    </div>
+    <div class="search" role="search">
+      <label for="q" class="sr-only">Find a building by name, address or id</label>
+      <input id="q" type="search" placeholder="Find a building" autocomplete="off" aria-controls="qList" aria-expanded="false">
+      <ul id="qList" role="listbox" hidden></ul>
+    </div>
+    <div class="spacer"></div>
+    <div class="filters">
+      <button class="btn" id="filterBtn" aria-expanded="false" aria-controls="filterPop">Filter</button>
+      <div class="popover" id="filterPop" hidden>
+        <fieldset id="provFilter"><legend>Data provenance</legend></fieldset>
+        <p class="tiny muted" style="margin:8px 0 0">REAL buildings have a solid outline; SIM and FIXTURE buildings a dashed one.</p>
+      </div>
+    </div>
+    <button class="btn" id="portfolioBtn">Portfolio</button>
+    <button class="btn" id="aboutBtn">About</button>
+  </header>
+
+  <main id="map" aria-label="Map of buildings coloured by the selected layer"></main>
+
+  <aside class="legend glass" id="legend" aria-label="Legend"></aside>
+
+  <div class="disclaimer glass" role="note">
+    <span><strong>Screening layer, not an engineering assessment.</strong> <span class="muted">Statistical estimates with uncertainty.</span></span>
+    <button class="btn" id="whatBtn">What this is</button>
+  </div>
+
+  <aside class="sheet" id="detail" hidden aria-labelledby="dTitle" tabindex="-1">
+    <div class="grabber" aria-hidden="true"></div>
+    <div class="sheet-head">
+      <div style="flex:1;min-width:0">
+        <h2 id="dTitle">Building</h2>
+        <div class="sub" id="dSub"></div>
+        <div id="dProv"></div>
+      </div>
+      <button class="btn icon" id="dClose" aria-label="Close building details">&times;</button>
+    </div>
+    <div class="sheet-body" id="dBody"></div>
+  </aside>
+
+  <dialog id="portfolioDlg" aria-labelledby="pTitle">
+    <div class="dlg-head">
+      <h2 id="pTitle">Portfolio</h2>
+      <button class="btn icon" data-close aria-label="Close portfolio">&times;</button>
+    </div>
+    <div class="dlg-body">
+      <p class="muted small" style="margin-top:0">Upload a CSV with any of these columns: <code>building_id</code>; <code>lat</code>, <code>lon</code>; <code>address</code>; and an optional <code>ref</code>. Each row is matched to a building and returned with its coverage status and, where released, its score with band.</p>
+      <div id="pMode" class="mode-note"></div>
+      <div class="drop" id="pDrop">
+        <div><strong>Drop a CSV here</strong> <span class="muted">or</span></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+          <label class="btn primary" for="pFile">Choose file</label>
+          <input id="pFile" type="file" accept=".csv,text/csv" class="sr-only">
+          <button class="btn" id="pSample">Try a sample portfolio</button>
+        </div>
+      </div>
+      <div id="pOut" aria-live="polite"></div>
+    </div>
+  </dialog>
+
+  <dialog id="aboutDlg" aria-labelledby="aTitle">
+    <div class="dlg-head">
+      <h2 id="aTitle">What this is and is not</h2>
+      <button class="btn icon" data-close aria-label="Close">&times;</button>
+    </div>
+    <div class="dlg-body">
+      <p><strong>QuakeScore is a statistical screening layer.</strong> Phones lying still inside a building record its ambient vibration. Many weak sessions are stacked to estimate the building's natural frequencies and damping, which are compared with what is expected for its structural class. The result is a score from 0 to 100, where 100 is the least vulnerable, always shown with a 5-95% uncertainty band.</p>
+      <p><strong>It is not a structural engineering assessment.</strong> The fragility mapping is physics-based and has not been calibrated against observed damage. A score cannot tell you whether a particular building is safe. Only a licensed structural engineer who inspects the building can. If you are concerned about a building, ask its owner or manager whether a seismic evaluation exists, or contact your local building department.</p>
+      <p><strong>Privacy.</strong> Only a building id and spectral summaries leave the phone; no audio, no location, no content above 25 Hz. Results for a building are published only after at least 3 different contributors and 5 sessions; until then the map shows coverage only.</p>
+      <p><strong>Provenance.</strong> Every result is labelled. <em>REAL</em>: measured with real phones in the real building. <em>SIM</em>: produced by the simulator. <em>FIXTURE</em>: fabricated placeholder records used to build this demo before batch results exist. SIM and FIXTURE data are shown as "Simulated data".</p>
+      <p id="aboutData" class="muted small"></p>
+      <details id="liveBox">
+        <summary>Live API connection</summary>
+        <p class="small muted">Open this page with <code>?api=https://your-api-host</code> to read from a running QuakeScore API instead of the static files. Buyer endpoints need an API key; without one the map shows coverage only. The key is kept in this tab's session storage only.</p>
+        <label class="field">API key <input id="apiKey" type="password" autocomplete="off"></label>
+        <button class="btn" id="apiKeySave">Use key and reload data</button>
+      </details>
+      <p class="tiny muted">Map tiles and building footprints: &copy; OpenStreetMap contributors. Footprint data is available under the Open Database Licence.</p>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast glass" role="status" hidden></div>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/portfolio.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

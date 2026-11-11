@@ -1,0 +1,24 @@
+{
+ "generated": "2026-11-11T19:03Z",
+ "buildings": 687,
+ "provenance": {
+  "SIM": 687
+ },
+ "status": {
+  "no_data": 210,
+  "scored": 222,
+  "needs_data": 255
+ },
+ "k_threshold": {
+  "contributors": 3,
+  "sessions": 5
+ },
+ "bbox": [
+  -122.40699551293538,
+  37.784863304194964,
+  -122.39168898670655,
+  37.7963012421616
+ ],
+ "footprints_synthetic": false,
+ "attribution": "Building footprints (c) OpenStreetMap contributors, ODbL 1.0"
+}
