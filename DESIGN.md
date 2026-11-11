@@ -208,15 +208,20 @@ Artefact rejection (Milestone 4). A candidate is kept only if it passes all of:
 
 1. **Width.** Fitted damping between 0.3% and 8%. Machinery tones are narrower than any structure;
    furniture resonances are broader.
-2. **Tone test.** Normalised periodogram variance per bin. A Gaussian random response gives 1; a
-   steady sinusoid tends to 0.
-3. **Persistence.** Present, scaled with excitation, in most sessions rather than a few.
-4. **Fleet check.** Not at a frequency that the same phone model reports across many unrelated
+2. **Tone and burst.** Normalised periodogram variance per bin. A Gaussian random response gives 1; a
+   steady sinusoid tends to 0; energy that arrives in bursts (elevator runs) gives well above 1.
+3. **Vertical.** A lateral building mode has no vertical motion. A peak that is also present on the
+   vertical axis is floor-borne machinery.
+4. **Support and single session.** The pooled per-session amplitude at the peak must be positive and
+   significant, and the peak must not live in one night only. (A test that required similar strength
+   in most sessions was tried and dropped: wind-driven modes really are far stronger on windy nights.)
+5. **Fleet check.** Not at a frequency that the same phone model reports across many unrelated
    buildings.
-5. **Cross-phone consistency.** Seen by more than one device where the building has several.
-6. **Height pattern.** Where floors are known, amplitude grows upward in the way a first mode does.
-7. **Plausibility window.** Within a wide factor of the period expected for the building's height.
-   The window is wide on purpose so that anomalously soft buildings are not discarded.
+6. **Detection strength.** Score of at least 7, or 6 when two contributors see the peak independently.
+7. **Plausibility window and mode order.** The fundamental must lie within a wide factor of the
+   period expected for the building's height, and the pipeline refuses to score when the lowest
+   identified peak may be a second mode. The window is wide on purpose so that anomalously soft
+   buildings are not discarded.
 
 The false-positive rate is measured on a labelled set of contaminated simulated sessions, and later
 on labelled real sessions.
