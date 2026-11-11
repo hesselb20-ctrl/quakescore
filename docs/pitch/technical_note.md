@@ -3,8 +3,8 @@
 <p class="lede">Technical note for reinsurers and catastrophe modellers. November 2026.</p>
 
 > **Status, stated first.** The method is built end to end and measured in simulation. It has **not**
-> been measured on a real building yet: the collector app is written but has not been compiled or run,
-> and no real session exists. Every result in this note is labelled. [SIM] is simulator output, [REF]
+> been measured on a real building yet: the collector app compiles and its signal processing passes the
+> reference tests, but it has not run on a phone, and no real session exists. Every result in this note is labelled. [SIM] is simulator output, [REF]
 > is a cited publication, [ASSUMED] is an engineering assumption not yet measured, [REAL] would be a
 > measurement on a real building and appears nowhere below. A pilot partner is asked to help close
 > exactly that gap (section 10).

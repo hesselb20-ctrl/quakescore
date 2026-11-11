@@ -33,7 +33,7 @@ Every number in this repository carries one of four labels: `REAL` (measured on 
 | `quakescore/product.py` | Batch job from sessions to building records |
 | `quakescore/service` | API, storage, portfolio matching, coverage |
 | `dashboard` | Static demo dashboard (MapLibre GL, OpenStreetMap tiles) |
-| `android`, `ios` | Collector app sources (written, not yet compiled or run) |
+| `android`, `ios` | Collector app. Android compiles and its DSP passes the reference tests; not yet run on a phone. iOS is a skeleton |
 | `experiments` | One script per milestone; outputs in `results/` |
 | `results/*_summary.md` | Measured tables per milestone |
 
@@ -58,6 +58,7 @@ Experiments (set `PYTHONPATH=.`; each writes JSON and a Markdown summary under `
 | `python experiments/m1_run.py` then `python experiments/m1_report.py` | 1: simulator and identification | 30 min |
 | `python experiments/export_device_vectors.py` | 2: test vectors for the Kotlin DSP | 1 min |
 | `python experiments/m3_validate_real.py <session folder>` | 3: real-building comparison | seconds |
+| `python experiments/inspect_sessions.py <session folder>` | 2-3: first look at real session files | seconds |
 | `python experiments/m4_artefacts.py` | 4: artefact rejection | 10 min |
 | `python experiments/m5_vulnerability.py` | 5: vulnerability model | 4 min |
 | `python experiments/m6_change.py` | 6: change detection | 15 min |
@@ -74,10 +75,12 @@ See `docs/api.md` for loading footprints and results, and for exporting the stat
 
 ## What is needed to get the first real measurement
 
-1. Build the Android app (`android/README.md`): it needs a JDK and the Android SDK, which were not
-   available where this was written, so the Kotlin has never been compiled.
-2. Run the field protocol in `docs/validation_protocol.md`.
-3. Drop the uploaded session files into a folder and run `experiments/m3_validate_real.py`.
+1. Build the debug APK and install it on a phone (`android/README.md`). It compiles and its signal
+   processing passes the reference tests, but it has never run on a device.
+2. Record a night with the field-test path (no server needed) and look at the result with
+   `experiments/inspect_sessions.py`. The phone's measured noise floor is the first number to get.
+3. Run the field protocol in `docs/validation_protocol.md` and compare against published values with
+   `experiments/m3_validate_real.py`.
 
 ## Data and licences
 

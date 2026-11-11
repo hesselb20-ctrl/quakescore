@@ -7,6 +7,7 @@ import android.location.Location
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
@@ -57,7 +58,44 @@ class BuildingPickActivity : ComponentActivity() {
         confirm.isEnabled = false
         list.setOnItemClickListener { _, _, _, _ -> confirm.isEnabled = true }
         Ui.button(this, col, "Try again") { start() }
+        if (BuildConfig.DEBUG) addFieldTestEntry(col)
         start()
+    }
+
+    /**
+     * Field-test entry, debug builds only. Lets a tester name the building by hand so sessions can be
+     * recorded before any server with footprints exists. Such ids start with "test:" and cannot be
+     * produced by a release build. No location is stored for a test building.
+     */
+    private fun addFieldTestEntry(col: LinearLayout) {
+        Ui.text(this, col, "Field test (debug build): no server needed. Type a short name for this building.", 14f)
+        val name = EditText(this).apply {
+            hint = "for example: home"
+            setSingleLine()
+        }
+        col.addView(name)
+        Ui.button(this, col, "Use as test building") {
+            val label = name.text.toString().trim()
+            val slug = label.lowercase().replace(Regex("[^a-z0-9]+"), "-").trim('-').take(60)
+            if (slug.isEmpty()) {
+                info.text = "Type a name first."
+                return@button
+            }
+            val id = "test:$slug"
+            val changed = id != prefs.buildingId
+            prefs.buildingId = id
+            prefs.buildingName = label
+            prefs.placeLat = Double.NaN
+            prefs.placeLon = Double.NaN
+            prefs.placeCheckedAtMs = System.currentTimeMillis()
+            prefs.placeNeedsConfirm = false
+            if (changed) {
+                prefs.floor = null
+                prefs.floorMethod = null
+                startActivity(Intent(this, FloorSetupActivity::class.java))
+            }
+            finish()
+        }
     }
 
     private fun start() {

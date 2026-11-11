@@ -4,7 +4,7 @@ The spectral contract (DESIGN.md 3.1) is the same on both platforms: the same gr
 zoom bands, windows, gate rules and upload schema. What differs is when a phone may measure, how fast
 and how regularly it samples, which clocks and sensors exist, and what the user has to do.
 
-Status: the Android app (`android/`) is complete in code but has not been compiled or run. The iOS
+Status: the Android app (`android/`) compiles and its signal processing passes the reference tests, but it has not been run on a phone. The iOS
 app (`ios/`) is a "measure now" skeleton without the spectral pipeline. No number in this document
 was measured on a device; wherever one is needed it says "to be measured" and how.
 

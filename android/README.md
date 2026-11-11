@@ -1,22 +1,51 @@
 # QuakeScore Android collector
 
-**Status: this project has not been compiled or run yet.** It was written without a JDK, Gradle or
-Android SDK available. The DSP design was checked by a sample-by-sample Python port against the test
-vectors (agreement to better than 1e-6 relative), but the Kotlin itself has never been through a
-compiler. Expect a round of small compile fixes.
+**Status: compiles and passes its tests; not yet run on a phone.**
 
-## What to do first
+- `:dsp-core:test`: 9 of 9 tests pass. The compiled Kotlin signal processing reproduces the Python
+  reference on both streaming test vectors, in all three bands, to about 5e-7 relative.
+- `:app:assembleDebug`: builds a debug APK (about 3.3 MB). The app code compiled without changes; one
+  bookkeeping fix was needed in `dsp-core` (samples arriving after a session ends are now counted, as
+  the reference does).
+- `:app:lintDebug`: 0 errors, 21 warnings (untranslated text literals and dependency-version notes).
+- Never installed or run on a device. Sensor delivery, batching, the foreground service, the wake
+  lock, time sync, the barometer and battery cost are all untested in practice.
 
-1. Install JDK 17 and the Android SDK (platform 35, build tools), or Android Studio (Ladybug or later).
-2. Create the Gradle wrapper (the wrapper jar is not committed):
-   `cd android && gradle wrapper --gradle-version 8.10.2` (needs a local Gradle 8.x once), or open the
-   `android/` folder in Android Studio, which offers to create it.
-3. Run the DSP unit tests (pure JVM, no SDK needed):
-   `cd android && ./gradlew :dsp-core:test` (Windows: `gradlew.bat :dsp-core:test`).
-   They read `../tests/vectors`. Regenerate the vectors and `FirTaps.kt` with
-   `PYTHONPATH=. .venv/Scripts/python.exe experiments/export_device_vectors.py` from the repository root.
-4. Build the app: `./gradlew :app:assembleDebug`, install on a phone with Android 8.0 (API 26) or later.
-5. Set the server address in Settings (default `https://api.quakescore.example` is a placeholder).
+Built with JDK 17 (Temurin 17.0.21), Gradle 8.10.2, Android Gradle Plugin 8.7.3, Kotlin 2.0.21,
+compile SDK 35, build tools 34.0.0.
+
+## Build
+
+1. Install JDK 17 and the Android SDK (platform 35), or Android Studio (Ladybug or later).
+2. Create `android/local.properties` with one line, using forward slashes:
+   `sdk.dir=C:/Users/<you>/AppData/Local/Android/Sdk`
+3. From `android/`: `gradlew.bat :dsp-core:test :app:assembleDebug` (Linux and macOS: `./gradlew`).
+   The tests read `../tests/vectors`. Regenerate the vectors and `FirTaps.kt` with
+   `python experiments/export_device_vectors.py` from the repository root (with `PYTHONPATH=.`).
+4. The APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
+
+On Windows, build from a short path. Android builds create deep folders, and a checkout under a long
+path runs into the 260-character limit. A directory junction is enough:
+`mklink /J C:\qs <path to the repository>`, then build from `C:\qs\android`.
+
+## First test night without a server
+
+The debug build has a field-test path, so no server is needed.
+
+1. Install: `adb install app/build/outputs/apk/debug/app-debug.apk`.
+2. Open the app, opt in, and on the "Your building" screen type a short name under "Field test" and
+   press "Use as test building". Enter the floor by hand.
+3. Leave the phone flat on a hard surface, on its charger, screen off, overnight. The notification
+   shows when it is recording.
+4. Next day, copy the session files off the phone (from cmd or Git Bash, not PowerShell):
+   `adb exec-out run-as org.quakescore.collector tar c files/sessions > sessions.tar`
+   then `tar xf sessions.tar`.
+5. Look at them: `python experiments/inspect_sessions.py files/sessions`. It prints, per session, the
+   windows kept and the measured noise floor of the phone, and every candidate peak with its label.
+
+Uploads to the placeholder server address fail and are retried; the session files stay on the phone
+until an upload succeeds. To record battery cost, note the battery percentage before and after a
+night on battery (see `docs/validation_protocol.md`).
 
 ## Layout
 

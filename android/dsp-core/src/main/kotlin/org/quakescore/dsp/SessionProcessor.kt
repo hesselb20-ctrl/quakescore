@@ -117,7 +117,6 @@ class SessionProcessor(val cfg: StreamConfig = StreamConfig()) {
 
     /** Adds one raw sample: t in UTC seconds, acceleration in m/s^2 in the device frame. */
     fun push(t: Double, x: Double, y: Double, z: Double) {
-        if (status.terminal) return
         if (nRaw > 0 && !(t > tLast)) {
             nRejectedRaw++
             return
@@ -125,6 +124,9 @@ class SessionProcessor(val cfg: StreamConfig = StreamConfig()) {
         if (nRaw == 0L) tFirst = t
         tLast = t
         nRaw++
+        // Samples that arrive after the session has ended are counted (so the reported sample count,
+        // raw rate and duration describe everything the recorder delivered) but not processed.
+        if (status.terminal) return
         val g = grid
         if (g == null) {
             if (probeN * 4 + 4 > probe.size) probe = probe.copyOf(probe.size * 2)

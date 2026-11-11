@@ -8,8 +8,8 @@ publication, `ASSUMED` assumption not yet measured.
 The whole chain is built: simulator, on-device feature pipeline, identification, artefact rejection,
 vulnerability model, change detection, API, dashboard, collector app sources and a technical note for
 buyers. All of it is measured in simulation. None of it has touched a real building. Milestones 2 and
-3 need phones in buildings and a compiled app, and neither was possible here: the machine had no Java
-or Android toolchain, and field sessions take nights, not compute. So the honest answer to "does it
+3 need phones in buildings. The Android app now compiles and its signal processing passes the
+reference tests, but it has not run on a phone, and field sessions take nights, not compute. So the honest answer to "does it
 work" is: the mathematics works under stated assumptions, and the two assumptions that decide the
 business (how noisy phones really are, how hard buildings really shake at night) are still unmeasured.
 
@@ -34,7 +34,7 @@ Nothing has been measured on a real building. Count of real sessions: 0. Count o
 | Sessions for a stable first mode, mid-rise | 20 or fewer | 5 or fewer | SIM only, 9 storeys, top floor: 1 (80 ug phone) to 5 (150 ug) on windy nights; 50 or more on typical nights; not reached on quiet nights |
 | Minimum detectable stiffness change | 10% | 5% | SIM only, 9 storeys, 80 ug phone: 5% with 100 or more sessions a year; not reached with 60 sessions or with a 150 ug phone |
 | False positives from non-structural peaks | under 5% of reported modes | under 1% | SIM only: 3.5% of published modes on a held-out simulated set (minimum met, stretch not) |
-| Phone battery cost per overnight session | under 3% | under 1% | not measured (app never run) |
+| Phone battery cost per overnight session | under 3% | under 1% | not measured (app compiles, never run on a phone) |
 | Buildings scored in the demo city | 50 | 500 | 0 real; SIM: 222 of 687 under the assumed adoption |
 
 ## 2. What works in simulation
@@ -89,8 +89,10 @@ rehearsal shows the tooling works; it is not evidence about real buildings.
 
 **Not done.**
 
-- The Android app has never been compiled or run. The Kotlin DSP was checked only through a Python
-  port of the same streaming algorithm against exported test vectors. Expect compile errors.
+- The Android app has never run on a phone. It compiles (debug APK, lint 0 errors) and the compiled
+  Kotlin DSP reproduces the Python reference on the test vectors to about 5e-7 in all three bands
+  (9 of 9 tests). Sensor delivery, the foreground service, time sync, the barometer and battery cost
+  are untested in practice.
 - No overnight sessions, no battery measurement, no noise-floor measurement, no real building.
 - The iOS app is a skeleton.
 - The score was not validated against earthquake damage. No open dataset pairs pre-event modal
@@ -131,8 +133,8 @@ rehearsal shows the tooling works; it is not evidence about real buildings.
 
 ## 4. Three next steps to a paid pilot
 
-1. **Get the first real night, this month.** Compile the Android app (JDK and Android SDK needed),
-   fix what does not build, and run the two cheapest decisive measurements from
+1. **Get the first real night, this month.** Install the debug APK on a phone (it builds; the
+   field-test path needs no server) and run the two cheapest decisive measurements from
    `docs/validation_protocol.md`: each available phone model overnight on a ground-floor slab for its
    noise floor, and the same phones overnight on an upper floor of one tall and one mid-rise
    building. These two numbers replace the two largest assumptions in every table above and say
