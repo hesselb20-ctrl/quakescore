@@ -1,0 +1,11 @@
+building_id,name,storeys,height_m,f1_ref_hz,source
+ref:broad-center,"Broad Center, Caltech, Pasadena",3,,2.43;2.67,"Ambient 2003, preliminary; docs/references.md (c) row 1"
+ref:albina-yard,"Albina Yard, Portland",4,15.39,2.86;4.20,"Ambient 2017; docs/references.md (c) row 2"
+ref:grenoble-9,"9-storey RC dwelling, Grenoble",9,,2.28;2.73,"Ambient; docs/references.md (c) row 3 (building demolished: listed for reference only)"
+ref:millikan,"Millikan Library, Caltech, Pasadena",9,43.9,1.19;1.72,"Ambient two-year mean; docs/references.md (c) row 4"
+ref:grenoble-city-hall,"Grenoble City Hall",13,52,1.16;1.22,"Ambient one-year monitoring; docs/references.md (c) row 5"
+ref:ophite-tower,"Ophite Tower, Lourdes",18,,1.73;1.74,"Ambient one year; docs/references.md (c) row 6"
+ref:ucla-factor,"UCLA Factor Building, Los Angeles",17,,0.55;0.59,"Ambient 2002-2003; docs/references.md (c) row 7"
+ref:belledonne-tower,"Belledonne tower, Ile Verte, Grenoble",30,100,0.67;0.89,"Ambient; docs/references.md (c) row 8"
+ref:pacific-park-plaza,"Pacific Park Plaza, Emeryville",30,95,0.48,"Ambient, as cited by Kumar et al. 2025; docs/references.md (c) row 9"
+ref:millennium-tower,"Millennium Tower, San Francisco",58,197,0.26;0.30,"Ambient 2024, Kumar et al. 2025; docs/references.md (c) row 10"

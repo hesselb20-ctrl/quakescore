@@ -1,0 +1,501 @@
+{
+ "summary": {
+  "provenance": "SIM (rehearsal with simulated sessions, not a validation)",
+  "reference_buildings": 10,
+  "buildings_with_sessions": 10,
+  "buildings_identified": 10,
+  "within_5pct": 10,
+  "within_10pct": 10
+ },
+ "rows": [
+  {
+   "building_id": "ref:broad-center",
+   "name": "Broad Center, Caltech, Pasadena",
+   "storeys": "3",
+   "f1_ref_hz": [
+    2.43,
+    2.67
+   ],
+   "source": "Ambient 2003, preliminary; docs/references.md (c) row 1",
+   "sessions": 14,
+   "contributors": 4,
+   "phone_models": [
+    "low",
+    "mid"
+   ],
+   "f1_hz": 2.4230361007561223,
+   "f1_ci": [
+    2.4160267214358417,
+    2.429791333097276
+   ],
+   "zeta": 0.025390823409163987,
+   "zeta_ci": [
+    0.018589053153371643,
+    0.03172018512190338
+   ],
+   "error_pct": -0.2865802157974384,
+   "within_5": true,
+   "within_10": true,
+   "all_modes": [
+    {
+     "f": 2.4230361007561223,
+     "zeta": 0.025390823409163987,
+     "z": 18.792848587036133,
+     "label": "structural"
+    },
+    {
+     "f": 2.660821783379724,
+     "zeta": 0.04160510986871859,
+     "z": 22.839902877807617,
+     "label": "structural"
+    },
+    {
+     "f": 6.517257914524332,
+     "zeta": 0.09227937374947201,
+     "z": 14.269068717956543,
+     "label": "rejected:too-broad"
+    }
+   ]
+  },
+  {
+   "building_id": "ref:albina-yard",
+   "name": "Albina Yard, Portland",
+   "storeys": "4",
+   "f1_ref_hz": [
+    2.86,
+    4.2
+   ],
+   "source": "Ambient 2017; docs/references.md (c) row 2",
+   "sessions": 14,
+   "contributors": 4,
+   "phone_models": [
+    "low",
+    "mid"
+   ],
+   "f1_hz": 2.8658806885833896,
+   "f1_ci": [
+    2.8536372149467972,
+    2.8924115569826814
+   ],
+   "zeta": 0.03833275303271603,
+   "zeta_ci": [
+    0.022914616954545636,
+    0.055685758901764124
+   ],
+   "error_pct": 0.20561848193669796,
+   "within_5": true,
+   "within_10": true,
+   "all_modes": [
+    {
+     "f": 2.8658806885833896,
+     "zeta": 0.03833275303271603,
+     "z": 14.400440216064453,
+     "label": "structural"
+    },
+    {
+     "f": 4.210013395131302,
+     "zeta": 0.043487906987607065,
+     "z": 14.638387680053711,
+     "label": "structural"
+    }
+   ]
+  },
+  {
+   "building_id": "ref:grenoble-9",
+   "name": "9-storey RC dwelling, Grenoble",
+   "storeys": "9",
+   "f1_ref_hz": [
+    2.28,
+    2.73
+   ],
+   "source": "Ambient; docs/references.md (c) row 3 (building demolished: listed for reference only)",
+   "sessions": 14,
+   "contributors": 4,
+   "phone_models": [
+    "low",
+    "mid"
+   ],
+   "f1_hz": 2.280815744114451,
+   "f1_ci": [
+    2.2750466738638635,
+    2.293136588698642
+   ],
+   "zeta": 0.03349231126256475,
+   "zeta_ci": [
+    0.02608270186495675,
+    0.06273490872357133
+   ],
+   "error_pct": 0.03577825063383333,
+   "within_5": true,
+   "within_10": true,
+   "all_modes": [
+    {
+     "f": 2.280815744114451,
+     "zeta": 0.03349231126256475,
+     "z": 23.628189086914062,
+     "label": "structural"
+    },
+    {
+     "f": 2.7322490129252004,
+     "zeta": 0.03234561557155455,
+     "z": 26.827930450439453,
+     "label": "structural"
+    }
+   ]
+  },
+  {
+   "building_id": "ref:millikan",
+   "name": "Millikan Library, Caltech, Pasadena",
+   "storeys": "9",
+   "f1_ref_hz": [
+    1.19,
+    1.72
+   ],
+   "source": "Ambient two-year mean; docs/references.md (c) row 4",
+   "sessions": 14,
+   "contributors": 4,
+   "phone_models": [
+    "low",
+    "mid"
+   ],
+   "f1_hz": 1.189132946167669,
+   "f1_ci": [
+    1.1866708608259529,
+    1.1912308159063436
+   ],
+   "zeta": 0.017138680545325875,
+   "zeta_ci": [
+    0.014869774611805353,
+    0.019515248602142717
+   ],
+   "error_pct": -0.07286166658243554,
+   "within_5": true,
+   "within_10": true,
+   "all_modes": [
+    {
+     "f": 1.189132946167669,
+     "zeta": 0.017138680545325875,
+     "z": 50.31919860839844,
+     "label": "structural"
+    },
+    {
+     "f": 1.7208942216497478,
+     "zeta": 0.018549167519369792,
+     "z": 48.805782318115234,
+     "label": "structural"
+    }
+   ]
+  },
+  {
+   "building_id": "ref:grenoble-city-hall",
+   "name": "Grenoble City Hall",
+   "storeys": "13",
+   "f1_ref_hz": [
+    1.16,
+    1.22
+   ],
+   "source": "Ambient one-year monitoring; docs/references.md (c) row 5",
+   "sessions": 14,
+   "contributors": 4,
+   "phone_models": [
+    "low",
+    "mid"
+   ],
+   "f1_hz": 1.1597281196228661,
+   "f1_ci": [
+    1.1551291623922215,
+    1.162805933559946
+   ],
+   "zeta": 0.018376159926696813,
+   "zeta_ci": [
+    0.013376467154529642,
+    0.02429650505571398
+   ],
+   "error_pct": -0.023437963546013574,
+   "within_5": true,
+   "within_10": true,
+   "all_modes": [
+    {
+     "f": 1.1597281196228661,
+     "zeta": 0.018376159926696813,
+     "z": 54.56125259399414,
+     "label": "structural"
+    },
+    {
+     "f": 1.2197801072508478,
+     "zeta": 0.017034156396564457,
+     "z": 47.72269821166992,
+     "label": "structural"
+    }
+   ]
+  },
+  {
+   "building_id": "ref:ophite-tower",
+   "name": "Ophite Tower, Lourdes",
+   "storeys": "18",
+   "f1_ref_hz": [
+    1.73,
+    1.74
+   ],
+   "source": "Ambient one year; docs/references.md (c) row 6",
+   "sessions": 14,
+   "contributors": 4,
+   "phone_models": [
+    "low",
+    "mid"
+   ],
+   "f1_hz": 1.7353606798846597,
+   "f1_ci": [
+    1.7324312706792884,
+    1.7382701728934045
+   ],
+   "zeta": 0.025333003832400603,
+   "zeta_ci": [
+    0.022574513412419825,
+    0.02808067523012961
+   ],
+   "error_pct": -0.2666275928356443,
+   "within_5": true,
+   "within_10": true,
+   "all_modes": [
+    {
+     "f": 0.9400596992319185,
+     "zeta": 0.023316351470947894,
+     "z": 6.217587471008301,
+     "label": "rejected:weak"
+    },
+    {
+     "f": 1.7353606798846597,
+     "zeta": 0.025333003832400603,
+     "z": 89.92196655273438,
+     "label": "structural"
+    }
+   ]
+  },
+  {
+   "building_id": "ref:ucla-factor",
+   "name": "UCLA Factor Building, Los Angeles",
+   "storeys": "17",
+   "f1_ref_hz": [
+    0.55,
+    0.59
+   ],
+   "source": "Ambient 2002-2003; docs/references.md (c) row 7",
+   "sessions": 14,
+   "contributors": 4,
+   "phone_models": [
+    "low",
+    "mid"
+   ],
+   "f1_hz": 0.5494876127796388,
+   "f1_ci": [
+    0.5486624383338955,
+    0.5503153280544261
+   ],
+   "zeta": 0.008419041290426055,
+   "zeta_ci": [
+    0.007250201938985907,
+    0.010171009147035084
+   ],
+   "error_pct": -0.09316131279296647,
+   "within_5": true,
+   "within_10": true,
+   "all_modes": [
+    {
+     "f": 0.5494876127796388,
+     "zeta": 0.008419041290426055,
+     "z": 180.58767700195312,
+     "label": "structural"
+    },
+    {
+     "f": 0.5899690548786088,
+     "zeta": 0.008637961134798042,
+     "z": 94.67025756835938,
+     "label": "structural"
+    }
+   ]
+  },
+  {
+   "building_id": "ref:belledonne-tower",
+   "name": "Belledonne tower, Ile Verte, Grenoble",
+   "storeys": "30",
+   "f1_ref_hz": [
+    0.67,
+    0.89
+   ],
+   "source": "Ambient; docs/references.md (c) row 8",
+   "sessions": 14,
+   "contributors": 4,
+   "phone_models": [
+    "low",
+    "mid"
+   ],
+   "f1_hz": 0.6699349734886482,
+   "f1_ci": [
+    0.6688405430346369,
+    0.6709800534144994
+   ],
+   "zeta": 0.009454563272755038,
+   "zeta_ci": [
+    0.008366153052566414,
+    0.010676400919157059
+   ],
+   "error_pct": -0.009705449455499338,
+   "within_5": true,
+   "within_10": true,
+   "all_modes": [
+    {
+     "f": 0.6699349734886482,
+     "zeta": 0.009454563272755038,
+     "z": 260.721435546875,
+     "label": "structural"
+    },
+    {
+     "f": 0.8900482664402075,
+     "zeta": 0.009648561004991014,
+     "z": 148.34397888183594,
+     "label": "structural"
+    },
+    {
+     "f": 2.5031488862497593,
+     "zeta": 0.010733609212358603,
+     "z": 6.0146803855896,
+     "label": "rejected:weak"
+    },
+    {
+     "f": 4.330673576711523,
+     "zeta": 0.025400592084222674,
+     "z": 6.44549036026001,
+     "label": "rejected:weak"
+    },
+    {
+     "f": 5.705659308246783,
+     "zeta": 0.022686232997492516,
+     "z": 6.838412284851074,
+     "label": "rejected:weak"
+    }
+   ]
+  },
+  {
+   "building_id": "ref:pacific-park-plaza",
+   "name": "Pacific Park Plaza, Emeryville",
+   "storeys": "30",
+   "f1_ref_hz": [
+    0.48
+   ],
+   "source": "Ambient, as cited by Kumar et al. 2025; docs/references.md (c) row 9",
+   "sessions": 14,
+   "contributors": 4,
+   "phone_models": [
+    "low",
+    "mid"
+   ],
+   "f1_hz": 0.4800323353933655,
+   "f1_ci": [
+    0.47927419300605356,
+    0.48079259104350486
+   ],
+   "zeta": 0.006991849218487885,
+   "zeta_ci": [
+    0.006140773376379054,
+    0.007839641245795158
+   ],
+   "error_pct": 0.006736540284468795,
+   "within_5": true,
+   "within_10": true,
+   "all_modes": [
+    {
+     "f": 0.4800323353933655,
+     "zeta": 0.006991849218487885,
+     "z": 623.2335205078125,
+     "label": "structural"
+    },
+    {
+     "f": 0.552144206388525,
+     "zeta": 0.007195315878516617,
+     "z": 236.20123291015625,
+     "label": "structural"
+    },
+    {
+     "f": 1.3498093624309457,
+     "zeta": 0.001667821611193234,
+     "z": 7.209120273590088,
+     "label": "structural"
+    }
+   ]
+  },
+  {
+   "building_id": "ref:millennium-tower",
+   "name": "Millennium Tower, San Francisco",
+   "storeys": "58",
+   "f1_ref_hz": [
+    0.26,
+    0.3
+   ],
+   "source": "Ambient 2024, Kumar et al. 2025; docs/references.md (c) row 10",
+   "sessions": 14,
+   "contributors": 4,
+   "phone_models": [
+    "low",
+    "mid"
+   ],
+   "f1_hz": 0.25990220445396556,
+   "f1_ci": [
+    0.2595063870586026,
+    0.2602987574756886
+   ],
+   "zeta": 0.007633816418594184,
+   "zeta_ci": [
+    0.006794996581422316,
+    0.008614523912068595
+   ],
+   "error_pct": -0.03761367155171724,
+   "within_5": true,
+   "within_10": true,
+   "all_modes": [
+    {
+     "f": 0.25990220445396556,
+     "zeta": 0.007633816418594184,
+     "z": 4111.97998046875,
+     "label": "structural"
+    },
+    {
+     "f": 0.29537978849867536,
+     "zeta": 0.001024530515375749,
+     "z": 133.43174743652344,
+     "label": "structural"
+    },
+    {
+     "f": 0.299966181167387,
+     "zeta": 0.0077017187033172,
+     "z": 1842.2041015625,
+     "label": "structural"
+    },
+    {
+     "f": 0.7333942370098978,
+     "zeta": 0.009435106410041047,
+     "z": 34.4390869140625,
+     "label": "structural"
+    },
+    {
+     "f": 0.8442815037747049,
+     "zeta": 0.008783722076311984,
+     "z": 10.906556129455566,
+     "label": "structural"
+    },
+    {
+     "f": 1.695197057483243,
+     "zeta": 0.012141349708465452,
+     "z": 12.69763469696045,
+     "label": "structural"
+    },
+    {
+     "f": 1.9576749160362297,
+     "zeta": 0.010273984084047387,
+     "z": 8.111218452453613,
+     "label": "structural"
+    }
+   ]
+  }
+ ]
+}

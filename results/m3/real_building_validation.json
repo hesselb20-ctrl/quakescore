@@ -1,0 +1,211 @@
+{
+ "summary": {
+  "provenance": "NONE (no real sessions yet)",
+  "reference_buildings": 10,
+  "buildings_with_sessions": 0,
+  "buildings_identified": 0,
+  "within_5pct": 0,
+  "within_10pct": 0
+ },
+ "rows": [
+  {
+   "building_id": "ref:broad-center",
+   "name": "Broad Center, Caltech, Pasadena",
+   "storeys": "3",
+   "f1_ref_hz": [
+    2.43,
+    2.67
+   ],
+   "source": "Ambient 2003, preliminary; docs/references.md (c) row 1",
+   "sessions": 0,
+   "contributors": 0,
+   "phone_models": [],
+   "f1_hz": null,
+   "f1_ci": null,
+   "zeta": null,
+   "zeta_ci": null,
+   "error_pct": null,
+   "within_5": null,
+   "within_10": null
+  },
+  {
+   "building_id": "ref:albina-yard",
+   "name": "Albina Yard, Portland",
+   "storeys": "4",
+   "f1_ref_hz": [
+    2.86,
+    4.2
+   ],
+   "source": "Ambient 2017; docs/references.md (c) row 2",
+   "sessions": 0,
+   "contributors": 0,
+   "phone_models": [],
+   "f1_hz": null,
+   "f1_ci": null,
+   "zeta": null,
+   "zeta_ci": null,
+   "error_pct": null,
+   "within_5": null,
+   "within_10": null
+  },
+  {
+   "building_id": "ref:grenoble-9",
+   "name": "9-storey RC dwelling, Grenoble",
+   "storeys": "9",
+   "f1_ref_hz": [
+    2.28,
+    2.73
+   ],
+   "source": "Ambient; docs/references.md (c) row 3 (building demolished: listed for reference only)",
+   "sessions": 0,
+   "contributors": 0,
+   "phone_models": [],
+   "f1_hz": null,
+   "f1_ci": null,
+   "zeta": null,
+   "zeta_ci": null,
+   "error_pct": null,
+   "within_5": null,
+   "within_10": null
+  },
+  {
+   "building_id": "ref:millikan",
+   "name": "Millikan Library, Caltech, Pasadena",
+   "storeys": "9",
+   "f1_ref_hz": [
+    1.19,
+    1.72
+   ],
+   "source": "Ambient two-year mean; docs/references.md (c) row 4",
+   "sessions": 0,
+   "contributors": 0,
+   "phone_models": [],
+   "f1_hz": null,
+   "f1_ci": null,
+   "zeta": null,
+   "zeta_ci": null,
+   "error_pct": null,
+   "within_5": null,
+   "within_10": null
+  },
+  {
+   "building_id": "ref:grenoble-city-hall",
+   "name": "Grenoble City Hall",
+   "storeys": "13",
+   "f1_ref_hz": [
+    1.16,
+    1.22
+   ],
+   "source": "Ambient one-year monitoring; docs/references.md (c) row 5",
+   "sessions": 0,
+   "contributors": 0,
+   "phone_models": [],
+   "f1_hz": null,
+   "f1_ci": null,
+   "zeta": null,
+   "zeta_ci": null,
+   "error_pct": null,
+   "within_5": null,
+   "within_10": null
+  },
+  {
+   "building_id": "ref:ophite-tower",
+   "name": "Ophite Tower, Lourdes",
+   "storeys": "18",
+   "f1_ref_hz": [
+    1.73,
+    1.74
+   ],
+   "source": "Ambient one year; docs/references.md (c) row 6",
+   "sessions": 0,
+   "contributors": 0,
+   "phone_models": [],
+   "f1_hz": null,
+   "f1_ci": null,
+   "zeta": null,
+   "zeta_ci": null,
+   "error_pct": null,
+   "within_5": null,
+   "within_10": null
+  },
+  {
+   "building_id": "ref:ucla-factor",
+   "name": "UCLA Factor Building, Los Angeles",
+   "storeys": "17",
+   "f1_ref_hz": [
+    0.55,
+    0.59
+   ],
+   "source": "Ambient 2002-2003; docs/references.md (c) row 7",
+   "sessions": 0,
+   "contributors": 0,
+   "phone_models": [],
+   "f1_hz": null,
+   "f1_ci": null,
+   "zeta": null,
+   "zeta_ci": null,
+   "error_pct": null,
+   "within_5": null,
+   "within_10": null
+  },
+  {
+   "building_id": "ref:belledonne-tower",
+   "name": "Belledonne tower, Ile Verte, Grenoble",
+   "storeys": "30",
+   "f1_ref_hz": [
+    0.67,
+    0.89
+   ],
+   "source": "Ambient; docs/references.md (c) row 8",
+   "sessions": 0,
+   "contributors": 0,
+   "phone_models": [],
+   "f1_hz": null,
+   "f1_ci": null,
+   "zeta": null,
+   "zeta_ci": null,
+   "error_pct": null,
+   "within_5": null,
+   "within_10": null
+  },
+  {
+   "building_id": "ref:pacific-park-plaza",
+   "name": "Pacific Park Plaza, Emeryville",
+   "storeys": "30",
+   "f1_ref_hz": [
+    0.48
+   ],
+   "source": "Ambient, as cited by Kumar et al. 2025; docs/references.md (c) row 9",
+   "sessions": 0,
+   "contributors": 0,
+   "phone_models": [],
+   "f1_hz": null,
+   "f1_ci": null,
+   "zeta": null,
+   "zeta_ci": null,
+   "error_pct": null,
+   "within_5": null,
+   "within_10": null
+  },
+  {
+   "building_id": "ref:millennium-tower",
+   "name": "Millennium Tower, San Francisco",
+   "storeys": "58",
+   "f1_ref_hz": [
+    0.26,
+    0.3
+   ],
+   "source": "Ambient 2024, Kumar et al. 2025; docs/references.md (c) row 10",
+   "sessions": 0,
+   "contributors": 0,
+   "phone_models": [],
+   "f1_hz": null,
+   "f1_ci": null,
+   "zeta": null,
+   "zeta_ci": null,
+   "error_pct": null,
+   "within_5": null,
+   "within_10": null
+  }
+ ]
+}
