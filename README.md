@@ -6,6 +6,8 @@
 </picture>
 
 <picture>
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-01-dark.svg">
+  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-01-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-01-dark.svg">
   <img src=".github/assets/rule-01-light.svg" width="100%" alt="01 What it is">
 </picture>
@@ -18,6 +20,8 @@ It is a research prototype. Every result so far comes from a simulator. No real 
 measured.
 
 <picture>
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-02-dark.svg">
+  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-02-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-02-dark.svg">
   <img src=".github/assets/rule-02-light.svg" width="100%" alt="02 Why it exists">
 </picture>
@@ -37,11 +41,15 @@ modellers, who today work from building class and height rather than a measureme
 Derivation and sources: [`DESIGN.md`](DESIGN.md) sections 1 and 2, [`docs/references.md`](docs/references.md).
 
 <picture>
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-03-dark.svg">
+  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-03-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-03-dark.svg">
   <img src=".github/assets/rule-03-light.svg" width="100%" alt="03 How it works">
 </picture>
 
 <picture>
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/flow-mobile-dark.svg">
+  <source media="(max-width: 600px)" srcset=".github/assets/flow-mobile-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/flow-dark.svg">
   <img src=".github/assets/flow-light.svg" width="100%" alt="Data flow. On the phone: a still phone's accelerometer is low-pass filtered so nothing above 25 Hz survives, then reduced to averaged spectra in a session file with a building id and no location. On the server: sessions are stacked per building, modes are identified and non-structural peaks are rejected. For the reader: a vulnerability model, a score with a band, and an API and dashboard.">
 </picture>
@@ -75,6 +83,8 @@ Footprints are real: © OpenStreetMap contributors, ODbL. Structures, phones, se
 simulated. The sway is exaggerated.</sub>
 
 <picture>
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-04-dark.svg">
+  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-04-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-04-dark.svg">
   <img src=".github/assets/rule-04-light.svg" width="100%" alt="04 Capabilities">
 </picture>
@@ -116,6 +126,8 @@ Known weak points, from the same report:
 - The score has not been validated against earthquake damage.
 
 <picture>
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-05-dark.svg">
+  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-05-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-05-dark.svg">
   <img src=".github/assets/rule-05-light.svg" width="100%" alt="05 Quick start">
 </picture>
@@ -161,6 +173,8 @@ Loading data into the API, the experiment scripts and the Android build are desc
 [`docs/api.md`](docs/api.md), [`experiments/`](experiments) and [`android/README.md`](android/README.md).
 
 <picture>
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-06-dark.svg">
+  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-06-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-06-dark.svg">
   <img src=".github/assets/rule-06-light.svg" width="100%" alt="06 Stack, status, roadmap">
 </picture>
@@ -210,6 +224,8 @@ Loading data into the API, the experiment scripts and the Android build are desc
 | [`docs/media/quakescore_tutorial.mp4`](docs/media/quakescore_tutorial.mp4?raw=true) | 99-second explainer video, no sound, 12 MB download |
 
 <picture>
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-07-dark.svg">
+  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-07-light.svg">
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-07-dark.svg">
   <img src=".github/assets/rule-07-light.svg" width="100%" alt="07 License">
 </picture>
