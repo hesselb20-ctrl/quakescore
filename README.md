@@ -1,138 +1,222 @@
-# QuakeScore
+<picture>
+  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/hero-mobile-dark.svg">
+  <source media="(max-width: 600px)" srcset=".github/assets/hero-mobile-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/hero-dark.svg">
+  <img src=".github/assets/hero-light.svg" width="100%" alt="QuakeScore. Seismic vulnerability screening from phones at rest. Research prototype, simulation only.">
+</picture>
 
-![The idea: phones at rest, nights stacked, a score with a range](docs/media/idea.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-01-dark.svg">
+  <img src=".github/assets/rule-01-light.svg" width="100%" alt="01 What it is">
+</picture>
 
-QuakeScore estimates a building's natural frequencies and damping from the ambient vibration picked
-up by phones lying still inside it, and maps those measurements to a seismic vulnerability score
-with an uncertainty band. It is a statistical screening layer, not a structural engineering
-assessment.
+QuakeScore estimates how a building vibrates from phones lying still inside it overnight. It turns that
+measurement into a score from 0 to 100 for how vulnerable the building is to an earthquake, with an
+uncertainty band. It is a statistical screening layer, not a structural engineering assessment.
 
-**Where the project stands.** Everything that can be built and measured on a computer is built and
-measured in simulation. Nothing has been measured on a real building yet, because that needs phones
-in buildings. Read `docs/REPORT.md` first: it separates what works on real buildings (nothing yet),
-what works in simulation, what failed, and the next steps.
+It is a research prototype. Every result so far comes from a simulator. No real building has been
+measured.
 
-Every number in this repository carries one of four labels: `REAL` (measured on a real building),
-`SIM` (simulator), `REF` (cited publication), `ASSUMED` (engineering assumption not yet measured).
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-02-dark.svg">
+  <img src=".github/assets/rule-02-light.svg" width="100%" alt="02 Why it exists">
+</picture>
 
-## The idea in 99 seconds
+**The problem.** A building's natural frequency says how stiff it is, and stiffness drives how it
+responds to shaking. Published work shows a phone accelerometer can pick that frequency up. But a
+mid-rise roof moving at night peaks at about 56 µg/√Hz, and a phone's own sensor noise is 70 to
+300 µg/√Hz. In one recording the building is at or below the noise.
 
-[![Tutorial: why stacking nights reveals the building](docs/media/tutorial_teaser.gif)](docs/media/quakescore_tutorial.mp4?raw=true)
+**What was missing.** A pipeline that works at fleet scale: stack many weak nights per building until
+the peak clears the noise, reject peaks that are not structural, attach an uncertainty to every
+number, and map the result to a fragility model. That pipeline is what this repository builds.
 
-[Download the tutorial](docs/media/quakescore_tutorial.mp4?raw=true) (MP4, 12 MB, 1 min 39 s, no
-sound): the problem, the idea, why stacking works, the pipeline, how to record a night, and what
-comes out. GitHub does not play videos stored in a repository, so the link downloads the file. The
-clip above is the stacking scene. Everything shown is simulated and says so on screen.
+**Who it is for.** The technical note in `docs/pitch/` is written for reinsurers and catastrophe
+modellers, who today work from building class and height rather than a measurement per building.
 
-## How it works
+Derivation and sources: [`DESIGN.md`](DESIGN.md) sections 1 and 2, [`docs/references.md`](docs/references.md).
 
-![Five steps from a phone on a nightstand to a score, and the privacy rules](docs/media/how_it_works.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-03-dark.svg">
+  <img src=".github/assets/rule-03-light.svg" width="100%" alt="03 How it works">
+</picture>
 
-## What it is for
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/flow-dark.svg">
+  <img src=".github/assets/flow-light.svg" width="100%" alt="Data flow. On the phone: a still phone's accelerometer is low-pass filtered so nothing above 25 Hz survives, then reduced to averaged spectra in a session file with a building id and no location. On the server: sessions are stacked per building, modes are identified and non-structural peaks are rejected. For the reader: a vulnerability model, a score with a band, and an API and dashboard.">
+</picture>
 
-![A measured period narrows the score range from 15.7 to 8.9 points in simulation](docs/media/purpose.png)
+1. **Phone at rest.** A session starts only when the phone is flat, still and, by default, charging.
+   Seconds with movement are dropped.
+2. **On-device processing.** A low-pass filter removes everything above 25 Hz, so no speech survives.
+   Three zoom bands cover 0.1 to 20 Hz. Only averaged spectra are kept. Raw samples stay in memory
+   and are never written or sent.
+3. **Session file.** One small file per night: spectra, building id, floor, sync quality. The upload
+   codec rejects location-like fields.
+4. **Stack.** The server adds up sessions per building across nights and phones. Sensor noise
+   averages down. The structural peak stays.
+5. **Identify and reject.** Five estimators recover frequency, damping and mode shape, with bootstrap
+   intervals. Tests on peak width, vertical motion and tone shape remove HVAC, elevators, appliances
+   and furniture resonances.
+6. **Score.** The measured period updates a prior over Hazus 6.1 building classes. A capacity spectrum
+   calculation gives damage probabilities for three shaking scenarios. The score is
+   `100 × (1 − weighted mean damage ratio)`. It is never shown without its 5–95% band and a
+   provenance label.
+7. **Track.** Frequency is followed over time and corrected for temperature and season. A lasting
+   step is flagged as possible stiffness loss.
 
-## Where it stands
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/city-dark.gif">
+  <img src=".github/assets/city-light.gif" width="100%" alt="3D view of the demo district: 687 building footprints in downtown San Francisco. 222 carry a simulated score, 255 need more data, 210 have none. One 52-storey building sways in its first mode.">
+</picture>
 
-![Simulated results, and zero real sessions and buildings so far](docs/media/status.png)
+<sub>The demo district, drawn from the data file the dashboard reads (`dashboard/data/buildings.geojson`).
+Footprints are real: © OpenStreetMap contributors, ODbL. Structures, phones, sessions and scores are
+simulated. The sway is exaggerated.</sub>
 
-## Record a first night
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-04-dark.svg">
+  <img src=".github/assets/rule-04-light.svg" width="100%" alt="04 Capabilities">
+</picture>
 
-![The browser collector on a phone: set up, leave it overnight, save the file](docs/media/collector.png)
+What the code does today. All of it runs on simulated input.
 
-The shortest route to a real measurement is the browser collector, a single web page that works on
-iPhone and Android: https://hesselb20-ctrl.github.io/quakescore-collector/ (source in
-`web/collector/`). It sends nothing anywhere and saves one session file.
+- **Simulator.** Shear buildings of 1 to 40 storeys with wind and ground forcing, phone noise,
+  quantisation, rate error, jitter, tilt and furniture coupling. `quakescore/sim`
+- **Device pipeline.** A Python reference with Kotlin and JavaScript ports, checked against shared
+  test vectors. `quakescore/device`, `android/dsp-core`, `web/collector`
+- **Identification.** Spectral curve fit, FDD, EFDD, SSI-COV and random decrement, with bootstrap
+  intervals. `quakescore/ident`
+- **Artefact rejection.** Removes non-structural peaks before anything is published. `quakescore/artefacts`
+- **Vulnerability model.** Class prior, stiffness anomaly, fragility adjustment, score with band. `quakescore/vuln`
+- **Change detection.** Step detection in a frequency series with temperature and seasonal terms. `quakescore/change`
+- **Service.** FastAPI with 13 routes: session upload and deletion, building records, coverage,
+  portfolio matching, CSV and GeoJSON export. A building is released only with at least 3
+  contributors and 5 sessions. `quakescore/service`
+- **Dashboard.** Static MapLibre map of the demo district. `dashboard`
+- **Collectors.** A [browser page](https://hesselb20-ctrl.github.io/quakescore-collector/) that records
+  a night and saves one file, an Android app, and an iOS skeleton. `web/collector`, `android`, `ios`
 
-1. Open the page on a phone, type a building name and floor, lay the phone flat on its charger and
-   start. Leave the page open overnight (`web/collector/README.md`).
-2. Save the session file in the morning and look at it with
-   `python experiments/inspect_sessions.py <folder>`. The phone's measured noise floor is the first
-   number to get.
-3. On Android, the debug app records unattended with the screen off (`android/README.md`). It
-   compiles and its signal processing passes the reference tests, but it has never run on a device.
-4. Then run the field protocol in `docs/validation_protocol.md` and compare against published values
-   with `experiments/m3_validate_real.py`.
+Simulated results, from [`docs/REPORT.md`](docs/REPORT.md):
 
-Neither collector has run on a real phone yet; both were checked against simulated sensor data.
+| Measure | Result | Label |
+|---|---|---|
+| First-mode frequency error, peak below the noise floor | 0.11% median (curve fit) | `SIM` |
+| Non-structural peaks among published modes | 3.5% (2 of 57) | `SIM` |
+| Score band width, without and with a measured period | 15.7 → 8.9 points | `SIM` |
+| Demo district buildings scored | 222 of 687 | `SIM` |
+| Real sessions, real buildings | 0, 0 | `REAL` |
 
-## What the buyer sees
+Known weak points, from the same report:
 
-![Demo dashboard: simulated scores on real map footprints](docs/pitch/figures/dashboard.png)
+- Low- and mid-rise buildings on ordinary nights are below the detection limit for most phones under
+  the assumed excitation.
+- The stiffness-anomaly flag is close to useless with height as the only covariate. A building 30%
+  softer than expected is flagged 4% of the time.
+- The score has not been validated against earthquake damage.
 
-The demo dashboard shows simulated structures, phones and scores on real OpenStreetMap footprints.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-05-dark.svg">
+  <img src=".github/assets/rule-05-light.svg" width="100%" alt="05 Quick start">
+</picture>
 
-## Layout
-
-| Path | What it is |
-|---|---|
-| `DESIGN.md` | Signal chain, identification, vulnerability mapping, privacy, validation plan |
-| `docs/REPORT.md` | Final report: results, failures, next steps |
-| `docs/pitch/` | Technical note for reinsurers and catastrophe modellers |
-| `docs/media/` | Images and the tutorial video used on this page; `docs/media/src` holds their sources |
-| `docs/references.md` | Verified citations and published reference values |
-| `docs/validation_protocol.md` | Field protocol for the collector test and real-building validation |
-| `docs/privacy.md`, `docs/responsible_use.md`, `docs/licences.md` | Privacy design, use rules, licences |
-| `docs/platforms.md`, `docs/api.md` | Android, iOS and browser differences, upload schema, API |
-| `quakescore/sim` | Building, excitation, phone and interference simulator (time-domain and fast spectral path) |
-| `quakescore/device` | Reference on-device feature pipeline |
-| `quakescore/ident` | Stacking, detection, curve fit, EFDD, SSI-COV, random decrement, FDD, bootstrap |
-| `quakescore/artefacts` | Rejection of non-structural peaks |
-| `quakescore/vuln` | Class model, capacity spectrum method, fragility, QuakeScore |
-| `quakescore/change` | Frequency tracking and change detection |
-| `quakescore/product.py` | Batch job from sessions to building records |
-| `quakescore/service` | API, storage, portfolio matching, coverage |
-| `dashboard` | Static demo dashboard (MapLibre GL, OpenStreetMap tiles) |
-| `web/collector` | Browser collector: one page, same signal processing, saves a session file. Checked with simulated sensor readings; not yet run on a phone |
-| `android`, `ios` | Collector app. Android compiles and its DSP passes the reference tests; not yet run on a phone. iOS is a skeleton |
-| `tutorial` | Source of the tutorial video (Remotion) |
-| `experiments` | One script per milestone; outputs in `results/` |
-| `results/*_summary.md` | Measured tables per milestone |
-
-## Run it
+Requires Python 3.11 or newer. Node is needed only for the collector check. Commands below were run
+on Windows 11 with Python 3.15 and Node 26. On macOS or Linux use `.venv/bin/python` instead of
+`.venv/Scripts/python`; that path was not tested.
 
 ```bash
+git clone https://github.com/hesselb20-ctrl/quakescore.git
+cd quakescore
 python -m venv .venv
+.venv/Scripts/python -m pip install -e ".[service,dev]"
 ```
 
-```bash
-.venv/Scripts/python -m pip install numpy scipy pytest fastapi uvicorn httpx python-multipart matplotlib markdown
-```
+Run the tests. Expect `51 passed`.
 
 ```bash
 .venv/Scripts/python -m pytest -q
 ```
 
+Check the browser collector's signal processing against the Python reference. Expect `ALL PASS`.
+
 ```bash
 node web/collector/test_dsp.mjs
 ```
 
-Experiments (set `PYTHONPATH=.`; each writes JSON and a Markdown summary under `results/`):
-
-| Command | Milestone | Rough time on 6 cores |
-|---|---|---|
-| `python experiments/m1_run.py` then `python experiments/m1_report.py` | 1: simulator and identification | 30 min |
-| `python experiments/export_device_vectors.py` | 2: test vectors for the Kotlin and JavaScript DSP | 1 min |
-| `python experiments/m3_validate_real.py <session folder>` | 3: real-building comparison | seconds |
-| `python experiments/inspect_sessions.py <session folder>` | 2-3: first look at real session files | seconds |
-| `python experiments/m4_artefacts.py` | 4: artefact rejection | 10 min |
-| `python experiments/m5_vulnerability.py` | 5: vulnerability model | 4 min |
-| `python experiments/m6_change.py` | 6: change detection | 15 min |
-| `python experiments/demo_city.py` then `python experiments/summaries.py` | 7: demo city records | 10 min |
-| `python experiments/make_figures.py` | 8: figures for the technical note | 1 min |
-| `node docs/media/src/build.mjs` | Images on this page | 1 min |
-| `bash tutorial/render.sh` (after `npm install` in `tutorial/`) | Tutorial video, poster and teaser | 3 min |
-
-API and dashboard:
+Open the demo dashboard at `http://127.0.0.1:8080/`. It reads committed, simulated data and loads map
+tiles from OpenStreetMap.
 
 ```bash
-.venv/Scripts/python -m uvicorn quakescore.service.app:app
+.venv/Scripts/python -m http.server 8080 --directory dashboard
 ```
 
-See `docs/api.md` for loading footprints and results, and for exporting the static dashboard data.
+Start the API at `http://127.0.0.1:8000/v1/meta`. Building routes need the header
+`X-API-Key: demo-key`. That key is a placeholder for local use, not authentication.
 
-## Data and licences
+```bash
+.venv/Scripts/python -m uvicorn quakescore.service.app:app --no-access-log --port 8000
+```
 
-Footprints in `data/demo_city` are from OpenStreetMap contributors (ODbL). Fragility parameters are
-from the FEMA Hazus 6.1 technical manual. See `docs/licences.md` for what has to be settled before
-any data is sold.
+Loading data into the API, the experiment scripts and the Android build are described in
+[`docs/api.md`](docs/api.md), [`experiments/`](experiments) and [`android/README.md`](android/README.md).
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-06-dark.svg">
+  <img src=".github/assets/rule-06-light.svg" width="100%" alt="06 Stack, status, roadmap">
+</picture>
+
+**Stack**
+
+| Layer | Built with |
+|---|---|
+| Simulator, identification, models | Python 3.11+, NumPy, SciPy |
+| Service | FastAPI, uvicorn, SQLite |
+| Dashboard | MapLibre GL, OpenStreetMap tiles, no build step |
+| Browser collector | Plain JavaScript modules, no dependencies |
+| Android collector | Kotlin, Gradle |
+| iOS | Swift, skeleton only |
+
+**Status**
+
+| Part | State |
+|---|---|
+| Simulator, identification, artefact rejection, vulnerability, change detection | Built. Measured in simulation only. |
+| API and dashboard | Run locally. Nothing is deployed. Storage is SQLite; a PostGIS schema is written but never executed. |
+| Browser collector | Deployed as a static page. Driven with simulated sensor events. Never run on a phone. |
+| Android app | Compiles, according to the repository's own report. Never installed on a device. |
+| iOS app | Skeleton. Samples are counted and discarded. |
+| Authentication | Placeholder static key. |
+| Real-building validation | Not started. It needs phones in buildings. |
+
+**Roadmap.** The three next steps in the report:
+
+1. Record the first real night. Measure each phone's noise floor on a ground-floor slab, then the same
+   phones on an upper floor of one tall and one mid-rise building.
+2. Validate on five reference buildings with published ambient values, from 3 to 30+ storeys, and
+   publish the comparison table.
+3. Run a pilot with a portfolio whose structural systems are documented, and test one question: does a
+   measured period change the vulnerability estimate enough to matter.
+
+**Documents**
+
+| File | Contents |
+|---|---|
+| [`DESIGN.md`](DESIGN.md) | Signal chain, identification, vulnerability mapping, privacy, validation plan |
+| [`docs/REPORT.md`](docs/REPORT.md) | Results, failures and next steps |
+| [`docs/api.md`](docs/api.md) | API, upload schema, release rules, data loading |
+| [`docs/privacy.md`](docs/privacy.md), [`docs/responsible_use.md`](docs/responsible_use.md) | Privacy design and use rules |
+| [`docs/validation_protocol.md`](docs/validation_protocol.md) | Field protocol for the first real measurements |
+| [`docs/pitch/technical_note.md`](docs/pitch/technical_note.md) | Technical note for reinsurers and catastrophe modellers |
+| [`docs/media/quakescore_tutorial.mp4`](docs/media/quakescore_tutorial.mp4?raw=true) | 99-second explainer video, no sound, 12 MB download |
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-07-dark.svg">
+  <img src=".github/assets/rule-07-light.svg" width="100%" alt="07 License">
+</picture>
+
+No license file yet. All rights reserved until one is added.
+
+Third-party data keeps its own terms. Building footprints are © OpenStreetMap contributors under ODbL
+1.0 ([`data/demo_city/ATTRIBUTION.md`](data/demo_city/ATTRIBUTION.md)). Fragility parameters come from
+the FEMA Hazus 6.1 technical manual. Open licence questions are tracked in
+[`docs/licences.md`](docs/licences.md).
