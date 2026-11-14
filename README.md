@@ -1,9 +1,10 @@
-<picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/hero-mobile-dark.svg">
-  <source media="(max-width: 600px)" srcset=".github/assets/hero-mobile-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/hero-dark.svg">
-  <img src=".github/assets/hero-light.svg" width="100%" alt="QuakeScore. Seismic vulnerability screening from phones at rest. Research prototype, simulation only.">
-</picture>
+# QuakeScore
+
+Seismic vulnerability screening from phones at rest.
+
+<img src=".github/assets/figure.webp" width="100%" alt="3D chart. One night's spectrum, where the building's peak is hidden under the phone's sensor noise. Stacked nights then shrink the noise until the peak stands up. A final landscape shows the nights needed by building height, phone noise and night type, with a coral slab on every case not reached in 50 nights.">
+
+<sub>From the simulation results in `results/m1_summary.md` and the stacking law in `DESIGN.md` section 2. Simulation only: no real building has been measured.</sub>
 
 <picture>
   <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-01-dark.svg">
@@ -47,13 +48,6 @@ Derivation and sources: [`DESIGN.md`](DESIGN.md) sections 1 and 2, [`docs/refere
   <img src=".github/assets/rule-03-light.svg" width="100%" alt="03 How it works">
 </picture>
 
-<picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/flow-mobile-dark.svg">
-  <source media="(max-width: 600px)" srcset=".github/assets/flow-mobile-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/flow-dark.svg">
-  <img src=".github/assets/flow-light.svg" width="100%" alt="Data flow. On the phone: a still phone's accelerometer is low-pass filtered so nothing above 25 Hz survives, then reduced to averaged spectra in a session file with a building id and no location. On the server: sessions are stacked per building, modes are identified and non-structural peaks are rejected. For the reader: a vulnerability model, a score with a band, and an API and dashboard.">
-</picture>
-
 1. **Phone at rest.** A session starts only when the phone is flat, still and, by default, charging.
    Seconds with movement are dropped.
 2. **On-device processing.** A low-pass filter removes everything above 25 Hz, so no speech survives.
@@ -73,14 +67,9 @@ Derivation and sources: [`DESIGN.md`](DESIGN.md) sections 1 and 2, [`docs/refere
 7. **Track.** Frequency is followed over time and corrected for temperature and season. A lasting
    step is flagged as possible stiffness loss.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/city-dark.gif">
-  <img src=".github/assets/city-light.gif" width="100%" alt="3D view of the demo district: 687 building footprints in downtown San Francisco. 222 carry a simulated score, 255 need more data, 210 have none. One 52-storey building sways in its first mode.">
-</picture>
+<img src=".github/assets/figure-city.webp" width="100%" alt="3D map of the demo district: 687 real building footprints in downtown San Francisco, extruded by height. Scored buildings are coloured from coral (more vulnerable) to teal (least vulnerable); buildings needing more data are blue-grey and those with none are pale. Tall buildings are mostly scored, low-rise ones mostly not.">
 
-<sub>The demo district, drawn from the data file the dashboard reads (`dashboard/data/buildings.geojson`).
-Footprints are real: © OpenStreetMap contributors, ODbL. Structures, phones, sessions and scores are
-simulated. The sway is exaggerated.</sub>
+<sub>Drawn from `dashboard/data/buildings.geojson`. Footprints are real: © OpenStreetMap contributors, ODbL. Structures, phones, sessions and scores are simulated.</sub>
 
 <picture>
   <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-04-dark.svg">
