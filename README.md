@@ -52,6 +52,10 @@ Derivation and sources: [`DESIGN.md`](DESIGN.md) sections 1 and 2, [`docs/refere
 7. **Track.** Frequency is followed over time and corrected for temperature and season. A lasting
    step is flagged as possible stiffness loss.
 
+<img src=".github/assets/figure-how.webp" width="100%" alt="One simulated building: four building types weighted by height are reweighted by one measured period of 0.74 s, then damage odds for three quake strengths combine into a score of 73 with a band of 51 to 90.">
+
+<sub>The repo's own scoring code run on one demo-city record in <code>results/demo_city/buildings.json</code>. Structure and sessions are simulated; the Hazus-based score has not been checked against real earthquake damage.</sub>
+
 <img src=".github/assets/figure-city.webp" width="100%" alt="3D map of the demo district: 687 real building footprints in downtown San Francisco, extruded by height. Scored buildings are coloured from coral (more vulnerable) to teal (least vulnerable); buildings needing more data are blue-grey and those with none are pale. Tall buildings are mostly scored, low-rise ones mostly not.">
 
 <sub>Drawn from `dashboard/data/buildings.geojson`. Footprints are real: © OpenStreetMap contributors, ODbL. Structures, phones, sessions and scores are simulated.</sub>
@@ -93,6 +97,10 @@ Known weak points, from the same report:
 - The stiffness-anomaly flag is close to useless with height as the only covariate. A building 30%
   softer than expected is flagged 4% of the time.
 - The score has not been validated against earthquake damage.
+
+<img src=".github/assets/figure-more.webp" width="100%" alt="Three simulated results sit inside their minimum targets with one noisier phone falling short; a weak one-off softness flag (4% caught at 30% softer) against year-long tracking (100% at 5%); ten reference buildings whose measurement slots are all empty.">
+
+<sub>Targets and results from <code>docs/REPORT.md</code> and <code>results/m4</code> to <code>m6</code>, all simulated. No real sessions, never run on a phone; battery use and real-damage validation not tested.</sub>
 
 ## Quick start
 
