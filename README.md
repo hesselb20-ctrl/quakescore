@@ -6,12 +6,7 @@ Seismic vulnerability screening from phones at rest.
 
 <sub>From the simulation results in `results/m1_summary.md` and the stacking law in `DESIGN.md` section 2. Simulation only: no real building has been measured.</sub>
 
-<picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-01-dark.svg">
-  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-01-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-01-dark.svg">
-  <img src=".github/assets/rule-01-light.svg" width="100%" alt="01 What it is">
-</picture>
+## What it is
 
 QuakeScore estimates how a building vibrates from phones lying still inside it overnight. It turns that
 measurement into a score from 0 to 100 for how vulnerable the building is to an earthquake, with an
@@ -20,12 +15,7 @@ uncertainty band. It is a statistical screening layer, not a structural engineer
 It is a research prototype. Every result so far comes from a simulator. No real building has been
 measured.
 
-<picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-02-dark.svg">
-  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-02-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-02-dark.svg">
-  <img src=".github/assets/rule-02-light.svg" width="100%" alt="02 Why it exists">
-</picture>
+## Why it exists
 
 **The problem.** A building's natural frequency says how stiff it is, and stiffness drives how it
 responds to shaking. Published work shows a phone accelerometer can pick that frequency up. But a
@@ -41,12 +31,7 @@ modellers, who today work from building class and height rather than a measureme
 
 Derivation and sources: [`DESIGN.md`](DESIGN.md) sections 1 and 2, [`docs/references.md`](docs/references.md).
 
-<picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-03-dark.svg">
-  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-03-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-03-dark.svg">
-  <img src=".github/assets/rule-03-light.svg" width="100%" alt="03 How it works">
-</picture>
+## How it works
 
 1. **Phone at rest.** A session starts only when the phone is flat, still and, by default, charging.
    Seconds with movement are dropped.
@@ -71,12 +56,7 @@ Derivation and sources: [`DESIGN.md`](DESIGN.md) sections 1 and 2, [`docs/refere
 
 <sub>Drawn from `dashboard/data/buildings.geojson`. Footprints are real: © OpenStreetMap contributors, ODbL. Structures, phones, sessions and scores are simulated.</sub>
 
-<picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-04-dark.svg">
-  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-04-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-04-dark.svg">
-  <img src=".github/assets/rule-04-light.svg" width="100%" alt="04 Capabilities">
-</picture>
+## Capabilities
 
 What the code does today. All of it runs on simulated input.
 
@@ -114,12 +94,7 @@ Known weak points, from the same report:
   softer than expected is flagged 4% of the time.
 - The score has not been validated against earthquake damage.
 
-<picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-05-dark.svg">
-  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-05-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-05-dark.svg">
-  <img src=".github/assets/rule-05-light.svg" width="100%" alt="05 Quick start">
-</picture>
+## Quick start
 
 Requires Python 3.11 or newer. Node is needed only for the collector check. Commands below were run
 on Windows 11 with Python 3.15 and Node 26. On macOS or Linux use `.venv/bin/python` instead of
@@ -161,12 +136,7 @@ Start the API at `http://127.0.0.1:8000/v1/meta`. Building routes need the heade
 Loading data into the API, the experiment scripts and the Android build are described in
 [`docs/api.md`](docs/api.md), [`experiments/`](experiments) and [`android/README.md`](android/README.md).
 
-<picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-06-dark.svg">
-  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-06-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-06-dark.svg">
-  <img src=".github/assets/rule-06-light.svg" width="100%" alt="06 Stack, status, roadmap">
-</picture>
+## Stack, status, roadmap
 
 **Stack**
 
@@ -212,12 +182,7 @@ Loading data into the API, the experiment scripts and the Android build are desc
 | [`docs/pitch/technical_note.md`](docs/pitch/technical_note.md) | Technical note for reinsurers and catastrophe modellers |
 | [`docs/media/quakescore_tutorial.mp4`](docs/media/quakescore_tutorial.mp4?raw=true) | 99-second explainer video, no sound, 12 MB download |
 
-<picture>
-  <source media="(max-width: 600px) and (prefers-color-scheme: dark)" srcset=".github/assets/rule-mobile-07-dark.svg">
-  <source media="(max-width: 600px)" srcset=".github/assets/rule-mobile-07-light.svg">
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/rule-07-dark.svg">
-  <img src=".github/assets/rule-07-light.svg" width="100%" alt="07 License">
-</picture>
+## License
 
 No license file yet. All rights reserved until one is added.
 
